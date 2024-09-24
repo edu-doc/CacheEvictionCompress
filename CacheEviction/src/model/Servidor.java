@@ -1,6 +1,6 @@
-package model;
-
-import Exception.MyPickException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 public class Servidor {
 
@@ -15,22 +15,22 @@ public class Servidor {
 
     public void inserir (No no){
         hash.inserir(no);
-        log.log("Inserir", no, no.order.codigoServico, mc.tabela);
+        //log.log("Inserido no banco", no, no.order.codigoServico, mc);
     }
 
     public void inserirCliente (No no){
         hash.inserir(no);
-        log.log("Inserir", no, no.order.codigoServico, mc.tabela);
+        log.log("Inserido no banco", no, no.order.codigoServico, mc.tabela);
     }
 
     public void remover (int codigo) throws MyPickException{
         hash.remover(codigo);
         mc.remover(codigo);
-        log.log("Remover", hash.buscar(codigo), hash.buscar(codigo).order.codigoServico, mc.tabela);
     }
 
     public void buscar(int codigo) throws MyPickException{
         mc.buscar(codigo,hash);
+        log.log("Buscado e inserido na cache", hash.buscar(codigo), hash.buscar(codigo).order.codigoServico, mc.tabela);
     }
 
     public void listar(){
@@ -51,10 +51,10 @@ public class Servidor {
         System.out.println(hash.tamanho());
     }
 
-    public void update(No no) throws MyPickException{
-        hash.atualizar(no);
-        mc.atualizar(no);
-        log.log("Atualizado", no, no.order.codigoServico, mc.tabela);
+    public void update(Banco hash, int cod, String nome, String descricao) throws MyPickException{
+        hash.atualizar(cod, nome, descricao);
+        mc.atualizar(cod, nome, descricao);
+        log.log("Atualizado na cache e no banco", hash.buscar(cod), cod, mc.tabela);
     }
 
     public void inicializar(){
@@ -203,77 +203,101 @@ public class Servidor {
         No n70 = new No(order70);
         No n71 = new No(order71);
 
-        inserir(n1);
-        inserir(n2);
-        inserir(n3);
-        inserir(n4);
-        inserir(n5);
-        inserir(n6);
-        inserir(n7);
-        inserir(n8);
-        inserir(n9);
-        inserir(n10);
-        inserir(n11);
-        inserir(n12);
-        inserir(n13);
-        inserir(n14);
-        inserir(n15);
-        inserir(n16);
-        inserir(n17);
-        inserir(n18);
-        inserir(n19);
-        inserir(n20);
-        inserir(n21);
-        inserir(n22);
-        inserir(n23);
-        inserir(n24);
-        inserir(n25);
-        inserir(n26);
-        inserir(n27);
-        inserir(n28);
-        inserir(n29);
-        inserir(n30);
-        inserir(n31);
-        inserir(n32);
-        inserir(n33);
-        inserir(n34);
-        inserir(n35);
-        inserir(n36);
-        inserir(n37);
-        inserir(n38);
-        inserir(n39);
-        inserir(n40);
-        inserir(n41);
-        inserir(n42);
-        inserir(n43);
-        inserir(n44);
-        inserir(n45);
-        inserir(n46);
-        inserir(n47);
-        inserir(n48);
-        inserir(n49);
-        inserir(n50);
-        inserir(n51);
-        inserir(n52);
-        inserir(n53);
-        inserir(n54);
-        inserir(n55);
-        inserir(n56);
-        inserir(n57);
-        inserir(n58);
-        inserir(n59);
-        inserir(n60);
-        inserir(n61);
-        inserir(n62);
-        inserir(n63);
-        inserir(n64);
-        inserir(n65);
-        inserir(n66);
-        inserir(n67);
-        inserir(n68);
-        inserir(n69);
-        inserir(n70);
-        inserir(n71);
+        List<No> nos = new ArrayList<>();
+
+        nos.add(n1);
+        nos.add(n2);
+        nos.add(n3);
+        nos.add(n4);
+        nos.add(n5);
+        nos.add(n6);
+        nos.add(n7);
+        nos.add(n8);
+        nos.add(n9);
+        nos.add(n10);
+        nos.add(n11);
+        nos.add(n12);
+        nos.add(n13);
+        nos.add(n14);
+        nos.add(n15);
+        nos.add(n16);
+        nos.add(n17);
+        nos.add(n18);
+        nos.add(n19);
+        nos.add(n20);
+        nos.add(n21);
+        nos.add(n22);
+        nos.add(n23);
+        nos.add(n24);
+        nos.add(n25);
+        nos.add(n26);
+        nos.add(n27);
+        nos.add(n28);
+        nos.add(n29);
+        nos.add(n30);
+        nos.add(n31);
+        nos.add(n32);
+        nos.add(n33);
+        nos.add(n34);
+        nos.add(n35);
+        nos.add(n36);
+        nos.add(n37);
+        nos.add(n38);
+        nos.add(n39);
+        nos.add(n40);
+        nos.add(n41);
+        nos.add(n42);
+        nos.add(n43);
+        nos.add(n44);
+        nos.add(n45);
+        nos.add(n46);
+        nos.add(n47);
+        nos.add(n48);
+        nos.add(n49);
+        nos.add(n50);
+        nos.add(n51);
+        nos.add(n52);
+        nos.add(n53);
+        nos.add(n54);
+        nos.add(n55);
+        nos.add(n56);
+        nos.add(n57);
+        nos.add(n58);
+        nos.add(n59);
+        nos.add(n60);
+        nos.add(n61);
+        nos.add(n62);
+        nos.add(n63);
+        nos.add(n64);
+        nos.add(n65);
+        nos.add(n66);
+        nos.add(n67);
+        nos.add(n68);
+        nos.add(n69);
+        nos.add(n70);
+
+        for (No no : nos) {
+            inserir(no);
+        }
+        
+        Random random = new Random();
+    List<No> nosAleatorios = new ArrayList<>();
+    while (nosAleatorios.size() < 30) {
+        int randomIndex = random.nextInt(nos.size());
+        No noSelecionado = nos.get(randomIndex);
+        if (!nosAleatorios.contains(noSelecionado)) {
+            nosAleatorios.add(noSelecionado);
+        }
+    }
+
+    // Buscar os 30 elementos selecionados aleatoriamente
+    for (No no : nosAleatorios) {
+        try {
+            buscar(no.order.codigoServico);
+        } catch (MyPickException e) {
+            e.printStackTrace();
+        }
+    }
         
     }
 

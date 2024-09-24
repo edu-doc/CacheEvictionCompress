@@ -1,5 +1,3 @@
-package model;
-
 public class No {
     
     public No proximo;

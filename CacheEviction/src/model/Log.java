@@ -1,31 +1,30 @@
-package model;
-
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
 
 public class Log {
 
-    private static String path = "src/log.txt";
+    private static String path = "log.txt";
 
-    public void log(String acao, No no, int cod, ArrayList<No>[] tabela) {
-
+    // Método para registrar ações na cache
+    public void log(String acao, No no, int codigo, No[] tabela) {
         StringBuilder tabelaString = new StringBuilder();
         
-        // Converte a tabela hash para uma representação de string
-        for (ArrayList<No> lista : tabela) {
-            for (No node : lista) {
-                tabelaString.append("[").append(node.order.codigoServico).append("]");
+        // Converte a tabela cache para uma representação de string
+        for (int i = 0; i < tabela.length; i++) {
+            if (tabela[i] != null) {
+                tabelaString.append("[").append(tabela[i].order.codigoServico).append("]");
+            } else {
+                tabelaString.append("[null]");
             }
         }
 
-        String tabelaF = tabelaString.toString();
+        String message = String.format("Ação: %s, Nó: %s, Código da Ordem de Serviço: %d, Tabela de Cache: %s%n",
+                acao,
+                no != null ? no.toString() : "null",
+                no != null ? no.order.codigoServico : -1,
+                tabelaString.toString());
 
-        String message = String.format(
-                "Ação: %s, Próximo Nó: %s, Código da Ordem de Serviço: %d, Tabela de Hash: %s%n", 
-                acao, no != null ? no.toString() : "null", cod, tabelaF);
-        
         try {
             FileWriter fw = new FileWriter(path, true);
             BufferedWriter bw = new BufferedWriter(fw);

@@ -1,186 +1,134 @@
-package model;
-
-import java.util.ArrayList;
 import java.util.Random;
 
 public class Cache {
 
     private static final int CAPACIDADE_MAXIMA = 20; // Capacidade máxima da tabela
-    private int M; // Tamanho da tabela (fixo em 20)
-    private int n; // Número de elementos na tabela
-    public ArrayList<No>[] tabela;
+    No[] tabela; // Array para armazenar os elementos
     private Random random;
 
-    public Cache(int tamanho) {
-        if (tamanho > CAPACIDADE_MAXIMA) {
-            throw new IllegalArgumentException("O tamanho da tabela não pode exceder " + CAPACIDADE_MAXIMA);
-        }
-        this.M = tamanho;
-        this.n = 0;
-        this.tabela = new ArrayList[this.M];
+    public Cache() {
+        this.tabela = new No[CAPACIDADE_MAXIMA]; // Criação de um array de tamanho fixo
         this.random = new Random();
-        inicializarTabela();
-    }
-
-    private void inicializarTabela() {
-        for (int i = 0; i < this.M; i++) {
-            this.tabela[i] = new ArrayList<>();
-        }
     }
 
     private int calcularHash(int chave) {
-        return chave % this.M;
+        return chave % CAPACIDADE_MAXIMA;
     }
 
     public void inserir(No no) {
-        if (n >= CAPACIDADE_MAXIMA) {
-            removerAleatorio(); // Remove um elemento aleatório se a tabela estiver cheia
-        }
-
         int indice = calcularHash(no.order.codigoServico);
-        ArrayList<No> lista = this.tabela[indice];
 
-        // Verifica duplicatas
-        for (No node : lista) {
-            if (node.order.codigoServico == no.order.codigoServico) {
-                System.out.println("Elemento já existe na tabela.");
-                return; // Não insere duplicata
-            }
+        // Se já existe um nó no índice, removemos o existente antes de inserir o novo
+        if (tabela[indice] != null) {
+            System.out.println("Service Order já existe na tabela. Removendo existente: " + tabela[indice].order.codigoServico);
+            tabela[indice] = null; // Remove o nó existente
         }
 
-        lista.add(no); // Adiciona o novo nó
-        n++;
+        // Se a tabela estiver cheia, remove um nó aleatoriamente e guarda a posição
+        if (estaCheia()) {
+            System.out.println("Tabela cheia. Removendo um Service Order aleatoriamente.");
+            int indiceRemovido = removerAleatorio(); // Remove um nó aleatoriamente e retorna o índice
+            // Insere o novo nó na posição do nó removido
+            tabela[indiceRemovido] = no;
+            System.out.println("Service Order inserido na cache na posição " + indiceRemovido + ": " + no.order.codigoServico);
+        } else {
+            // Insere o novo nó no índice calculado
+            tabela[indice] = no;
+            System.out.println("Service Order inserido na cache: " + no.order.codigoServico);
+        }
     }
 
-    private void removerAleatorio() {
-        int indiceTabela = random.nextInt(M); // Sorteia um índice da tabela
-        while (tabela[indiceTabela].isEmpty()) {
-            indiceTabela = random.nextInt(M); // Garante que não seja uma lista vazia
-        }
+    private int removerAleatorio() {
+        int indiceTabela;
+        do {
+            indiceTabela = random.nextInt(CAPACIDADE_MAXIMA); // Sorteia um índice da tabela
+        } while (tabela[indiceTabela] == null); // Garante que não seja um índice vazio
 
-        ArrayList<No> lista = tabela[indiceTabela];
-        int indiceLista = random.nextInt(lista.size()); // Sorteia um índice na lista
-
-        No noRemovido = lista.remove(indiceLista); // Remove o nó
-        n--;
-        System.out.println("Elemento removido: " + noRemovido.order.codigoServico);
+        No noRemovido = tabela[indiceTabela]; // Guarda o nó a ser removido
+        tabela[indiceTabela] = null; // Remove o nó
+        System.out.println("Service Order removido: " + noRemovido.order.codigoServico);
+        
+        return indiceTabela; // Retorna o índice do nó removido
     }
 
     public No buscar(int chave, Banco banco) {
-        // Primeiro, verifica na cache
         int indice = calcularHash(chave);
-        ArrayList<No> lista = this.tabela[indice];
-    
-        for (No node : lista) {
-            if (node.order.codigoServico == chave) {
-                System.out.println("Elemento encontrado na cache: " + chave);
-                return node; // Retorna o nó encontrado na cache
-            }
+
+        // Verifica se o elemento está na cache
+        if (tabela[indice] != null && tabela[indice].order.codigoServico == chave) {
+            System.out.println("Service Order encontrado na cache: " + chave);
+            return tabela[indice]; // Retorna o nó encontrado na cache
         }
-    
+
         // Se não encontrado na cache, busca no banco
         No noDoBanco = banco.buscar(chave);
         if (noDoBanco != null) {
             // Adiciona à cache
             inserir(noDoBanco);
-            System.out.println("Elemento encontrado no banco e adicionado à cache: " + chave);
+            System.out.println("Service Order encontrado no banco e adicionado à cache: " + chave);
             return noDoBanco; // Retorna o nó encontrado no banco
         }
-    
-        System.out.println("Elemento não encontrado em nenhum lugar: " + chave);
+
+        System.out.println("Service Order não encontrado nem no banco nem na cache: " + chave);
         return null; // Não encontrado
     }
-    
 
     public No remover(int chave) {
         int indice = calcularHash(chave);
-        ArrayList<No> lista = this.tabela[indice];
 
-        for (No node : lista) {
-            if (node.order.codigoServico == chave) {
-                lista.remove(node); // Remove o nó da lista
-                n--;
-                return node; // Retorna o nó removido
-            }
+        if (tabela[indice] != null && tabela[indice].order.codigoServico == chave) {
+            No noRemovido = tabela[indice]; // Guarda o nó a ser removido
+            tabela[indice] = null; // Remove o nó
+            System.out.println("Service Order removido: " + noRemovido.order.codigoServico);
+            return noRemovido; // Retorna o nó removido
         }
+
+        System.out.println("Service Order não encontrado para remoção.");
         return null; // Não encontrado
     }
 
-    public boolean atualizar(No novoNo) {
-        int indice = calcularHash(novoNo.order.codigoServico);
-        ArrayList<No> lista = this.tabela[indice];
-    
-        for (int i = 0; i < lista.size(); i++) {
-            No node = lista.get(i);
-            if (node.order.codigoServico == novoNo.order.codigoServico) {
-                // Atualiza os dados do nó existente
-                lista.set(i, novoNo);
-                System.out.println("Elemento atualizado: " + novoNo.order.codigoServico);
-                return true; // Retorna true se a atualização foi bem-sucedida
-            }
+    public boolean atualizar(int codigoServico, String nome, String descricao) {
+        int indice = calcularHash(codigoServico);
+
+        if (tabela[indice] == null) {
+            System.out.println("Nenhuma Service Order nesse índice.");
+            return false;
         }
-        System.out.println("Elemento não encontrado para atualização.");
+
+        No node = tabela[indice];
+        if (node.order.codigoServico == codigoServico) {
+            // Atualiza os atributos do nó existente
+            node.order.nome = nome; // Atualiza o nome do serviço
+            node.order.descricao = descricao; // Atualiza a descrição do serviço
+            System.out.println("Service Order atualizado: " + codigoServico);
+            return true; // Retorna true se a atualização foi bem-sucedida
+        }
+
+        System.out.println("Service Order não encontrado.");
         return false; // Retorna false se o nó não foi encontrado para atualização
     }
-    
 
     public void imprimirCache() {
-        for (int i = 0; i < this.M; i++) {
-            System.out.print("[ " + i + " ] --> ");
-            ArrayList<No> lista = this.tabela[i];
-
-            if (lista.isEmpty()) {
+        for (int i = 0; i < CAPACIDADE_MAXIMA; i++) {
+            System.out.print(i + " -> ");
+            if (tabela[i] == null) {
                 System.out.println("null");
             } else {
-                for (No node : lista) {
-                    System.out.print(node.order.codigoServico + " ");
-                }
-                System.out.println();
+                System.out.println(tabela[i].order.codigoServico);
             }
         }
-    }
-
-    public void listarElementos() {
-        for (ArrayList<No> lista : tabela) {
-            for (No no : lista) {
-                printarNo(no);
-            }
-        }
-    }
-
-    private void printarNo(No no) {
-        System.out.println("=================");
-        System.out.println("Código: " + no.order.codigoServico);
-        System.out.println("Nome: " + no.order.nome);
-        System.out.println("Descrição: " + no.order.descricao);
-        System.out.println("Hora: " + no.order.hora);
-    }
-
-    public No sortearElemento() {
-        No noSorteado = null;
-
-        while (noSorteado == null) {
-            int indiceTabela = random.nextInt(M);
-            ArrayList<No> lista = tabela[indiceTabela];
-
-            if (!lista.isEmpty()) {
-                int indiceLista = random.nextInt(lista.size());
-                noSorteado = lista.get(indiceLista);
-            }
-        }
-
-        System.out.println("Elemento sorteado: ");
-        printarNo(noSorteado);
-
-        return noSorteado;
     }
 
     public int tamanho() {
-        return this.n;
+        int count = 0;
+        for (No no : tabela) {
+            if (no != null) count++;
+        }
+        return count; // Retorna o total de elementos na cache
     }
 
     public boolean estaCheia() {
-        return n >= CAPACIDADE_MAXIMA;
+        return tamanho() >= CAPACIDADE_MAXIMA;
     }
 
     public int capacidadeMaxima() {

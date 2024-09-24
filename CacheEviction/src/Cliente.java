@@ -1,23 +1,16 @@
 import java.util.Scanner;
 
-import Exception.MyPickException;
-import model.Banco;
-import model.Cache;
-import model.No;
-import model.ServiceOrder;
-import model.Servidor;
-
 public class Cliente {
 
     private static Banco hash = new Banco(11);
-    private static Cache mc = new Cache(20);
+    private static Cache mc = new Cache();
     private static Servidor server = new Servidor(hash, mc);
 
+    
     public static void main(String[] args) throws Exception {
+        server.inicializar();
         Scanner sc = new Scanner(System.in);
         int opcao = 0;
-
-        server.inicializar();
 
         do {
             exibirMenu();
@@ -27,6 +20,7 @@ public class Cliente {
             processarOpcao(opcao, sc);
             
         } while (opcao != 7);
+
 
         sc.close();
     }
