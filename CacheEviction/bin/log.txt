@@ -1,0 +1,3 @@
+Operação feita: Inserir, Tipo de rotação: Sem rotação, Altura da arvore: 0, Codigo da Ordem de Serviço: 60, Ordem de Serviço na cache: [43][44][45][46][47][48][49][50][51][52][53][54][55][56][57][58][59][20][35][60]
+Operação feita: Inserir, Tipo de rotação: Sem rotação, Altura da arvore: 0, Codigo da Ordem de Serviço: 61, Ordem de Serviço na cache: [44][45][46][47][48][49][50][51][52][53][54][55][56][57][58][59][20][35][60][61]
+Operação feita: Remover, Tipo de rotação: Rotação Esquerda Simples, Altura da arvore: 5, Codigo da Ordem de Serviço: 31, Ordem de Serviço na cache: [44][45][46][47][48][49][50][51][52][53][54][56][57][58][59][20][35][60][61]
