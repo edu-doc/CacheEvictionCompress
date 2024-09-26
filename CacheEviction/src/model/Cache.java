@@ -56,7 +56,7 @@ public class Cache {
 
         // Verifica se o elemento está na cache
         if (tabela[indice] != null && tabela[indice].order.codigoServico == chave) {
-            System.out.println("Service Order encontrado na cache: " + chave);
+            System.out.println("Service Order encontrado na cache, Codigo de serviço "+ tabela[indice].order.codigoServico + " Nome: " + tabela[indice].order.nome + " Descrição " + tabela[indice].order.descricao);
             return tabela[indice]; // Retorna o nó encontrado na cache
         }
 
@@ -65,7 +65,7 @@ public class Cache {
         if (noDoBanco != null) {
             // Adiciona à cache
             inserir(noDoBanco);
-            System.out.println("Service Order encontrado no banco e adicionado à cache: " + chave);
+            System.out.println("Service Order encontrado no banco e adicionado à cache, Codigo de serviço "+ noDoBanco.order.codigoServico + " Nome: " + noDoBanco.order.nome + " Descrição " + noDoBanco.order.descricao + chave);
             return noDoBanco; // Retorna o nó encontrado no banco
         }
 
@@ -95,11 +95,11 @@ public class Cache {
             return false;
         }
 
-        No node = tabela[indice];
-        if (node.order.codigoServico == codigoServico) {
+        No no = tabela[indice];
+        if (no.order.codigoServico == codigoServico) {
             // Atualiza os atributos do nó existente
-            node.order.nome = nome; // Atualiza o nome do serviço
-            node.order.descricao = descricao; // Atualiza a descrição do serviço
+            no.order.nome = nome; // Atualiza o nome do serviço
+            no.order.descricao = descricao; // Atualiza a descrição do serviço
             System.out.println("Service Order atualizado: " + codigoServico);
             return true; // Retorna true se a atualização foi bem-sucedida
         }

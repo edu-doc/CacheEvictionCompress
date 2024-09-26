@@ -1,6 +1,5 @@
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 public class Servidor {
 
@@ -15,7 +14,7 @@ public class Servidor {
 
     public void inserir (No no){
         hash.inserir(no);
-        //log.log("Inserido no banco", no, no.order.codigoServico, mc);
+        log.log("Inserido no banco", no, no.order.codigoServico, mc.tabela);
     }
 
     public void inserirCliente (No no){
@@ -55,6 +54,15 @@ public class Servidor {
         hash.atualizar(cod, nome, descricao);
         mc.atualizar(cod, nome, descricao);
         log.log("Atualizado na cache e no banco", hash.buscar(cod), cod, mc.tabela);
+    }
+
+    public void inserirNoCacheComLimite(No no) {
+        if (mc.tamanho() < 20) {  // Verifica se a cache tem espaço disponível
+            mc.inserir(no);  // Insere o elemento na cache
+            log.log("Inserido na cache", no, no.order.codigoServico, mc.tabela);  // Log da inserção
+        } else {
+            System.out.println("Cache já está cheia! Não é possível inserir mais de " + 20 + " elementos.");
+        }
     }
 
     public void inicializar(){
@@ -129,7 +137,6 @@ public class Servidor {
         ServiceOrder order68 = new ServiceOrder("Simone", "Erro: Falha na transferência de dados");
         ServiceOrder order69 = new ServiceOrder("Anderson", "Erro: Erro de sincronização de tempo");
         ServiceOrder order70 = new ServiceOrder("Luiza", "Erro: Falha na autenticação de usuário");
-        ServiceOrder order71 = new ServiceOrder("Miguel", "Erro: Serviço temporariamente inacessível");
 
         No n1 = new No(order1);
         No n2 = new No(order2);
@@ -201,7 +208,6 @@ public class Servidor {
         No n68 = new No(order68);
         No n69 = new No(order69);
         No n70 = new No(order70);
-        No n71 = new No(order71);
 
         List<No> nos = new ArrayList<>();
 
@@ -279,25 +285,31 @@ public class Servidor {
         for (No no : nos) {
             inserir(no);
         }
-        
-        Random random = new Random();
-    List<No> nosAleatorios = new ArrayList<>();
-    while (nosAleatorios.size() < 30) {
-        int randomIndex = random.nextInt(nos.size());
-        No noSelecionado = nos.get(randomIndex);
-        if (!nosAleatorios.contains(noSelecionado)) {
-            nosAleatorios.add(noSelecionado);
-        }
-    }
 
-    // Buscar os 30 elementos selecionados aleatoriamente
-    for (No no : nosAleatorios) {
-        try {
-            buscar(no.order.codigoServico);
-        } catch (MyPickException e) {
-            e.printStackTrace();
-        }
-    }
+        
+        inserirNoCacheComLimite(n50);
+        inserirNoCacheComLimite(n51);
+        inserirNoCacheComLimite(n52);
+        inserirNoCacheComLimite(n53);
+        inserirNoCacheComLimite(n54);
+        inserirNoCacheComLimite(n55);
+        inserirNoCacheComLimite(n56);
+        inserirNoCacheComLimite(n57);
+        inserirNoCacheComLimite(n58);
+        inserirNoCacheComLimite(n59);
+        inserirNoCacheComLimite(n60);
+        inserirNoCacheComLimite(n61);
+        inserirNoCacheComLimite(n62);
+        inserirNoCacheComLimite(n63);
+        inserirNoCacheComLimite(n64);
+        inserirNoCacheComLimite(n65);
+        inserirNoCacheComLimite(n66);
+        inserirNoCacheComLimite(n67);
+        inserirNoCacheComLimite(n68);
+        inserirNoCacheComLimite(n69);
+        inserirNoCacheComLimite(n70);
+
+        
         
     }
 

@@ -21,7 +21,8 @@ public class Banco {
     }
 
     private int calcularHash(int chave) {
-        return chave % this.M;
+        int x = encontrarPrimoAnterior(this.M);
+        return chave % x;
     }
 
     public void inserir(No no) {
