@@ -1,14 +1,15 @@
+import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Random;
 
 public class Banco {
 
     private int M; // Tamanho da tabela hash
     private int n; // Número de elementos na tabela
     public LinkedList<No>[] tabela;
+    private final double LIMITE_FATOR_CARGA = 0.75;
 
-    public Banco(int tamanho) {
-        this.M = tamanho;
+    public Banco() {
+        this.M = 11;
         this.n = 0;
         this.tabela = new LinkedList[this.M];
         inicializarTabela();
@@ -25,71 +26,106 @@ public class Banco {
         return chave % x;
     }
 
+    public void adicionarOrdemComprimida(HashMap<String, String> ordemComprimida) throws MyPickException {
+        // Extrai os dados da ordem comprimida
+        String codigoServicoStr = ordemComprimida.get("Código de Serviço");
+        String nome = ordemComprimida.get("Nome");
+        String descricao = ordemComprimida.get("Descrição");
+        String hora = ordemComprimida.get("Hora");
+
+        // Verifica se os dados da ordem comprimida são válidos
+        if (codigoServicoStr == null || nome == null || descricao == null || hora == null) {
+            throw new MyPickException("Dados da ordem comprimida inválidos.");
+        }
+
+        // Cria uma nova ordem de serviço com os dados fornecidos
+        int codigoServico = Integer.parseInt(codigoServicoStr);
+        ServiceOrder novaOrdem = new ServiceOrder(codigoServico, nome, descricao, hora);
+        
+        // A frequência inicial é 1 ao adicionar a nova ordem
+        inserir(new No(novaOrdem, 1));
+    }
+
     public void inserir(No no) {
-        int indice = calcularHash(no.order.codigoServico);
+        if (calcularFatorDeCarga() > LIMITE_FATOR_CARGA) {
+            redimensionarTabela(true); // Aumentar o tamanho da tabela se necessário
+        }
+
+        int indice = calcularHash(no.getServiceOrder().getCodigoServico());
         LinkedList<No> lista = this.tabela[indice];
 
-        // Evita duplicatas
+        // Evita duplicatas e move elementos já existentes para o início (autoajustável)
         for (No node : lista) {
-            if (node.order.codigoServico == no.order.codigoServico) {
-                return; // Se já existe, não insere
+            if (node.getServiceOrder().getCodigoServico() == no.getServiceOrder().getCodigoServico()) {
+                lista.remove(node);  // Remove o nó antigo
+                node.freq++; // Incrementa a frequência do nó existente
+                lista.addFirst(node);  // Adiciona o nó atualizado no início
+                return; // Se já existe, atualiza e não insere um novo
             }
         }
 
-        lista.add(no); // Adiciona o novo nó
+        lista.addFirst(no); // Adiciona o novo nó no início
         n++;
     }
 
-    public No buscar(int chave) {
+    public No buscar(int chave) throws MyPickException {
         int indice = calcularHash(chave);
         LinkedList<No> lista = this.tabela[indice];
 
         for (No node : lista) {
-            if (node.order.codigoServico == chave) {
+            if (node.getServiceOrder().getCodigoServico() == chave) {
+                // Incrementa a frequência ao acessar a ordem de serviço
+                node.freq++;
+                // Move o nó acessado para o início (autoajustável)
+                lista.remove(node);
+                lista.addFirst(node);
                 return node; // Retorna o nó encontrado
             }
         }
-        return null; // Não encontrado
+        throw new MyPickException("Service Order não encontrada com o código: " + chave);
     }
 
-    public No remover(int chave) {
+    public No remover(int chave) throws MyPickException {
         int indice = calcularHash(chave);
         LinkedList<No> lista = this.tabela[indice];
 
         for (No node : lista) {
-            if (node.order.codigoServico == chave) {
+            if (node.getServiceOrder().getCodigoServico() == chave) {
                 lista.remove(node); // Remove o nó da lista
                 n--;
                 return node; // Retorna o nó removido
             }
         }
-        return null; // Não encontrado
+        throw new MyPickException("Service Order não encontrada para remoção com o código: " + chave);
     }
 
-    public boolean atualizar(int codigoServico, String nome, String descricao) {
+    public boolean atualizar(int codigoServico, String nome, String descricao) throws MyPickException {
         int indice = calcularHash(codigoServico);
         LinkedList<No> lista = this.tabela[indice];
-    
-        if (lista == null) {
-            System.out.println("Nenhum Service Order encontrado");
-            return false;
+
+        if (lista == null || lista.isEmpty()) {
+            throw new MyPickException("Nenhuma Service Order encontrada para atualização com o código: " + codigoServico);
         }
-    
+
         for (No node : lista) {
-            if (node.order.codigoServico == codigoServico) {
+            if (node.getServiceOrder().getCodigoServico() == codigoServico) {
                 // Atualiza os atributos do nó existente
-                node.order.codigoServico = codigoServico; // Atualiza o código do serviço
-                node.order.nome = nome;                   // Atualiza o nome do serviço
-                node.order.descricao = descricao;         // Atualiza a descrição do serviço
-    
+                node.getServiceOrder().setNome(nome);
+                node.getServiceOrder().setDescricao(descricao);
+                // Incrementa a frequência
+                node.freq++;
+
+                // Move o nó atualizado para o início da lista (autoajustável)
+                lista.remove(node);
+                lista.addFirst(node);
+
                 System.out.println("Service Order atualizado: " + codigoServico);
                 return true; // Retorna true se a atualização foi bem-sucedida
             }
         }
-        System.out.println("Service Order não encontrado para atualização.");
-        return false; // Retorna false se o nó não foi encontrado para atualização
+        throw new MyPickException("Service Order não encontrada para atualização com o código: " + codigoServico);
     }
-    
+
     public void imprimirTabelaHash() {
         for (int i = 0; i < this.M; i++) {
             System.out.print(i + " -> ");
@@ -99,7 +135,7 @@ public class Banco {
                 System.out.println("null");
             } else {
                 for (No node : lista) {
-                    System.out.print(node.order.codigoServico + " ");
+                    System.out.print(node.getServiceOrder().getCodigoServico() + " ");
                 }
                 System.out.println();
             }
@@ -110,6 +146,14 @@ public class Banco {
         for (LinkedList<No> lista : tabela) {
             for (No no : lista) {
                 printarNo(no);
+            }
+        }
+    }
+
+    public void listarFrequencias() {
+        for (LinkedList<No> lista : tabela) {
+            for (No no : lista) {
+                System.out.println("Código: " + no.getServiceOrder().getCodigoServico() + ", Frequência: " + no.freq);
             }
         }
     }
@@ -168,30 +212,11 @@ public class Banco {
     }
 
     private void printarNo(No no) {
-        System.out.println("Código: " + no.order.codigoServico);
-        System.out.println("Nome: " + no.order.nome);
-        System.out.println("Descrição: " + no.order.descricao);
-        System.out.println("Hora: " + no.order.hora);
-    }
-
-    public No sortearElemento() {
-        Random random = new Random();
-        No noSorteado = null;
-
-        while (noSorteado == null) {
-            int indiceTabela = random.nextInt(M);
-            LinkedList<No> lista = tabela[indiceTabela];
-
-            if (!lista.isEmpty()) {
-                int indiceLista = random.nextInt(lista.size());
-                noSorteado = lista.get(indiceLista);
-            }
-        }
-
-        System.out.println("Service Order sorteado: ");
-        printarNo(noSorteado);
-
-        return noSorteado;
+        System.out.println("Código: " + no.getServiceOrder().getCodigoServico());
+        System.out.println("Nome: " + no.getServiceOrder().getNome());
+        System.out.println("Descrição: " + no.getServiceOrder().getDescricao());
+        System.out.println("Hora: " + no.getServiceOrder().getHora());
+        System.out.println("Frequência: " + no.freq); // Exibe a frequência
     }
 
     public int tamanho() {

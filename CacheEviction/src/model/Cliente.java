@@ -2,7 +2,7 @@ import java.util.Scanner;
 
 public class Cliente {
 
-    private static Banco hash = new Banco(11);
+    private static Banco hash = new Banco();
     private static Cache mc = new Cache();
     private static Servidor server = new Servidor(hash, mc);
 
@@ -38,7 +38,7 @@ public class Cliente {
         System.out.println("");
     }
 
-    private static void processarOpcao(int opcao, Scanner sc) {
+    private static void processarOpcao(int opcao, Scanner sc) throws MyPickException {
         switch (opcao) {
             case 1:
                 cadastrarOS(sc);
@@ -79,7 +79,7 @@ public class Cliente {
         System.out.println();
     }
 
-    private static void cadastrarOS(Scanner sc) {
+    private static void cadastrarOS(Scanner sc) throws MyPickException {
         System.out.print("Digite seu nome: ");
         String nome = sc.nextLine();
 
@@ -87,7 +87,7 @@ public class Cliente {
         String desc = sc.nextLine();
 
         ServiceOrder so = new ServiceOrder(nome, desc);
-        No no = new No(so);
+        No no = new No(so,1);
 
         server.inserirCliente(no);
     }

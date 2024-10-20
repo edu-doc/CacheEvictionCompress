@@ -7,29 +7,31 @@ public class Log {
     private static String path = "log.txt";
 
     // Método para registrar ações na cache
-    public void log(String acao, No no, int codigo, No[] tabela) {
-        StringBuilder tabelaString = new StringBuilder();
+    public void log(String acao, No no, int codigo, FilaPrioridade<No> filaPrioridade) {
+        StringBuilder filaString = new StringBuilder();
         
-        // Converte a tabela cache para uma representação de string
-        for (int i = 0; i < tabela.length; i++) {
-            if (tabela[i] != null) {
-                tabelaString.append("[").append(tabela[i].order.codigoServico).append("]");
+        // Converte a fila de prioridade para uma representação de string
+        for (int i = 0; i < filaPrioridade.size(); i++) {
+            No noFila = filaPrioridade.peek(); // Obtém o elemento da fila
+            if (noFila != null && noFila.getServiceOrder() != null) {
+                filaString.append("[").append(noFila.getServiceOrder().getCodigoServicoFormatado()).append("]");
             } else {
-                tabelaString.append("[null]");
+                filaString.append("[null]");
             }
+            filaPrioridade.enqueue(filaPrioridade.dequeue()); // Reordena a fila
         }
 
-        String message = String.format("Ação: %s, Nó: %s, Código da Ordem de Serviço: %d, Tabela de Cache: %s%n",
+        String message = String.format(
+                "Ação: %s, Nó: %s, Código da Ordem de Serviço: %d, Fila de Cache: %s%n",
                 acao,
                 no != null ? no.toString() : "null",
-                no != null ? no.order.codigoServico : -1,
-                tabelaString.toString());
+                no != null && no.getServiceOrder() != null ? no.getServiceOrder().getCodigoServico() : -1,
+                filaString.toString()
+        );
 
-        try {
-            FileWriter fw = new FileWriter(path, true);
-            BufferedWriter bw = new BufferedWriter(fw);
+        // Grava a mensagem no arquivo de log
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(path, true))) {
             bw.write(message);
-            bw.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
