@@ -30,6 +30,10 @@ public class ServiceOrder {
         this.hora = horaFormatada.format(data);
     }
 
+    public ServiceOrder(){
+
+    }
+
     // Incrementa o contador e retorna o código de serviço
     public static int getNextCodigo() {
         return ++count;  // Incrementa e retorna
@@ -103,6 +107,32 @@ public class ServiceOrder {
     public int getCodigoServico() {
         return codigoServico;
     }
+
+    public static ServiceOrder fromString(String serviceOrderString) {
+        // Divide a string nos diferentes campos baseados nos delimitadores
+        String[] partes = serviceOrderString.split(" Nome:| Descrição:| Hora:");
+        
+        // Extrai os valores de cada campo
+        String codigoServicoStr = partes[0].replace("Código de Serviço:", "").trim();
+        int codigoServico = Integer.parseInt(codigoServicoStr);  // Converte para int
+        
+        String nome = partes[1].trim();  // Nome
+        
+        String descricao = partes[2].trim();  // Descrição
+        
+        String hora = partes[3].trim();  // Hora
+    
+        // Cria uma nova instância de ServiceOrder
+        ServiceOrder serviceOrder = new ServiceOrder(nome, descricao);
+        
+        // Atualiza o código de serviço para o que foi lido da string
+        serviceOrder.codigoServico = codigoServico;  
+        
+        // Atualiza a hora
+        serviceOrder.hora = hora;
+        
+        return serviceOrder;
+    }    
 
     @Override
     public String toString() {

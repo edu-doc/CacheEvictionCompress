@@ -15,9 +15,9 @@ public class Servidor {
         this.huffman = new Huffman();
     }
 
-    public void inserir (No no) throws MyPickException{
-        System.out.println(no.getServiceOrder() + " " + no.getFreq());
-        hash.inserir(no);
+    public void inserir (String str) throws MyPickException{
+        ServiceOrder sc = sc.fromString(str);
+        hash.inserir(sc);
         log.log("Inserido no banco", no, no.getServiceOrder().getCodigoServico(), mc.getFilaPrioridade());
     }
 

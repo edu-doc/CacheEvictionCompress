@@ -5,7 +5,7 @@ public class Banco {
 
     private int M; // Tamanho da tabela hash
     private int n; // Número de elementos na tabela
-    public LinkedList<No>[] tabela;
+    public LinkedList<ServiceOrder>[] tabela;
 
     public Banco(int tamanho) {
         this.M = tamanho;
@@ -25,42 +25,42 @@ public class Banco {
         return chave % x;
     }
 
-    public void inserir(No no) {
-        int indice = calcularHash(no.getServiceOrder().getCodigoServico());
-        LinkedList<No> lista = this.tabela[indice];
+    public void inserir(ServiceOrder sc) {
+        int indice = calcularHash(sc.getCodigoServico());
+        LinkedList<ServiceOrder> lista = this.tabela[indice];
 
         // Evita duplicatas
-        for (No node : lista) {
-            if (node.getServiceOrder().getCodigoServico() == no.getServiceOrder().getCodigoServico()) {
+        for (ServiceOrder order : lista) {
+            if (sc.getCodigoServico() == order.getCodigoServico()) {
                 return; // Se já existe, não insere
             }
         }
 
-        lista.add(no); // Adiciona o novo nó
+        lista.add(sc); // Adiciona o novo nó
         n++;
     }
 
-    public No buscar(int chave) {
+    public ServiceOrder buscar(int chave) {
         int indice = calcularHash(chave);
-        LinkedList<No> lista = this.tabela[indice];
+        LinkedList<ServiceOrder> lista = this.tabela[indice];
 
-        for (No node : lista) {
-            if (node.getServiceOrder().getCodigoServico() == chave) {
-                return node; // Retorna o nó encontrado
+        for (ServiceOrder order : lista) {
+            if (order.getCodigoServico() == chave) {
+                return order; // Retorna o nó encontrado
             }
         }
         return null; // Não encontrado
     }
 
-    public No remover(int chave) {
+    public ServiceOrder remover(int chave) {
         int indice = calcularHash(chave);
-        LinkedList<No> lista = this.tabela[indice];
+        LinkedList<ServiceOrder> lista = this.tabela[indice];
 
-        for (No node : lista) {
-            if (node.getServiceOrder().getCodigoServico() == chave) {
-                lista.remove(node); // Remove o nó da lista
+        for (ServiceOrder order : lista) {
+            if (order.getCodigoServico() == chave) {
+                lista.remove(order); // Remove o nó da lista
                 n--;
-                return node; // Retorna o nó removido
+                return order; // Retorna o nó removido
             }
         }
         return null; // Não encontrado
@@ -68,19 +68,19 @@ public class Banco {
 
     public boolean atualizar(int codigoServico, String nome, String descricao) {
         int indice = calcularHash(codigoServico);
-        LinkedList<No> lista = this.tabela[indice];
+        LinkedList<ServiceOrder> lista = this.tabela[indice];
     
         if (lista == null) {
             System.out.println("Nenhum Service Order encontrado");
             return false;
         }
     
-        for (No node : lista) {
-            if (node.getServiceOrder().getCodigoServico() == codigoServico) {
+        for (ServiceOrder order : lista) {
+            if (order.getCodigoServico() == codigoServico) {
                 // Atualiza os atributos do nó existente
-                node.getServiceOrder().codigoServico = codigoServico; // Atualiza o código do serviço
-                node.getServiceOrder().nome = nome;                   // Atualiza o nome do serviço
-                node.getServiceOrder().descricao = descricao;         // Atualiza a descrição do serviço
+                order.codigoServico = codigoServico; // Atualiza o código do serviço
+                order.nome = nome;                   // Atualiza o nome do serviço
+                order.descricao = descricao;         // Atualiza a descrição do serviço
     
                 System.out.println("Service Order atualizado: " + codigoServico);
                 return true; // Retorna true se a atualização foi bem-sucedida
@@ -93,13 +93,13 @@ public class Banco {
     public void imprimirTabelaHash() {
         for (int i = 0; i < this.M; i++) {
             System.out.print(i + " -> ");
-            LinkedList<No> lista = this.tabela[i];
+            LinkedList<ServiceOrder> lista = this.tabela[i];
 
             if (lista.isEmpty()) {
                 System.out.println("null");
             } else {
-                for (No node : lista) {
-                    System.out.print(node.getServiceOrder().codigoServico + " ");
+                for (ServiceOrder order : lista) {
+                    System.out.print(order.codigoServico + " ");
                 }
                 System.out.println();
             }
@@ -107,9 +107,9 @@ public class Banco {
     }
 
     public void listarElementos() {
-        for (LinkedList<No> lista : tabela) {
-            for (No no : lista) {
-                printarNo(no);
+        for (LinkedList<ServiceOrder> lista : tabela) {
+            for (ServiceOrder order : lista) {
+                printarOrder(order);
             }
         }
     }
@@ -121,14 +121,14 @@ public class Banco {
     }
 
     public void redimensionarTabela(boolean aumentar) {
-        LinkedList<No>[] tabelaAntiga = tabela;
+        LinkedList<ServiceOrder>[] tabelaAntiga = tabela;
         M = aumentar ? encontrarProximoPrimo(M * 2) : encontrarPrimoAnterior(M / 2);
         tabela = new LinkedList[M];
         inicializarTabela();
 
-        for (LinkedList<No> lista : tabelaAntiga) {
-            for (No no : lista) {
-                inserir(no); // Reinsere os elementos na nova tabela
+        for (LinkedList<ServiceOrder> lista : tabelaAntiga) {
+            for (ServiceOrder order : lista) {
+                inserir(order); // Reinsere os elementos na nova tabela
             }
         }
         n = contarElementos();
@@ -161,37 +161,37 @@ public class Banco {
 
     private int contarElementos() {
         int total = 0;
-        for (LinkedList<No> lista : tabela) {
+        for (LinkedList<ServiceOrder> lista : tabela) {
             total += lista.size();
         }
         return total;
     }
 
-    private void printarNo(No no) {
-        System.out.println("Código: " + no.getServiceOrder().codigoServico);
-        System.out.println("Nome: " + no.getServiceOrder().nome);
-        System.out.println("Descrição: " + no.getServiceOrder().descricao);
-        System.out.println("Hora: " + no.getServiceOrder().hora);
+    private void printarOrder(ServiceOrder sc) {
+        System.out.println("Código: " + sc.codigoServico);
+        System.out.println("Nome: " + sc.nome);
+        System.out.println("Descrição: " + sc.descricao);
+        System.out.println("Hora: " + sc.hora);
     }
 
-    public No sortearElemento() {
+    public ServiceOrder sortearElemento() {
         Random random = new Random();
-        No noSorteado = null;
+        ServiceOrder scSorteado = null;
 
-        while (noSorteado == null) {
+        while (scSorteado == null) {
             int indiceTabela = random.nextInt(M);
-            LinkedList<No> lista = tabela[indiceTabela];
+            LinkedList<ServiceOrder> lista = tabela[indiceTabela];
 
             if (!lista.isEmpty()) {
                 int indiceLista = random.nextInt(lista.size());
-                noSorteado = lista.get(indiceLista);
+                scSorteado = lista.get(indiceLista);
             }
         }
 
         System.out.println("Service Order sorteado: ");
-        printarNo(noSorteado);
+        printarOrder(scSorteado);
 
-        return noSorteado;
+        return scSorteado;
     }
 
     public int tamanho() {
