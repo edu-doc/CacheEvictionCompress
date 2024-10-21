@@ -1,41 +1,19 @@
-// Classe que representa um nó da árvore de Huffman
 class No implements Comparable<No> {
-    ServiceOrder serviceOrder;  // Instância de ServiceOrder no nó
+    char caractere;
     int freq;
     No esquerda, direita;
 
-    // Construtor que recebe uma ordem de serviço e uma frequência
-    public No(ServiceOrder serviceOrder, int freq) {
-        this.serviceOrder = serviceOrder;
+    public No(char caractere, int freq) {
+        this.caractere = caractere;
         this.freq = freq;
         this.esquerda = null;
         this.direita = null;
     }
 
-    
+    public No(){}
 
-    // Implementa o método compareTo para comparar nós com base na frequência
     @Override
     public int compareTo(No outro) {
-        return this.freq - outro.freq;  // Retorna negativo se this.freq < outro.freq (min-heap)
+        return Integer.compare(this.freq, outro.freq); // Compara pela frequência
     }
-
-    // Retorna a ordem de serviço contida no nó
-    public ServiceOrder getServiceOrder() {
-        return serviceOrder;
-    }
-
-    public int getFreq() {
-        return freq;
-    }
-
-    public No getEsquerda() {
-        return esquerda;
-    }
-
-    public No getDireita() {
-        return direita;
-    }
-
-
 }

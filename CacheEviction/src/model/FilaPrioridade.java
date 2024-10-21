@@ -1,101 +1,79 @@
 import java.util.ArrayList;
-import java.util.List;
 
-class FilaPrioridade<T extends Comparable<T>> {
-    private List<T> heap;
+public class FilaPrioridade {
+    private ArrayList<No> heap; // Usamos um ArrayList para armazenar os elementos do heap
 
-    // Construtor
-    public FilaPrioridade(int cap) {
-        heap = new ArrayList<T>(cap);
+    public FilaPrioridade(int n) {
+        this.heap = new ArrayList<>(n);
     }
 
-    // Verifica se a fila está vazia
-    public boolean isEmpty() {
-        return heap.isEmpty();
+    // Método para inserir um novo nó na fila de prioridade
+    public void inserir(No no) {
+        heap.add(no); // Adiciona o nó ao final do heap
+        subir(heap.size() - 1); // Reorganiza o heap
     }
 
-    // Retorna o tamanho da fila
+    // Método para remover e retornar o nó de maior prioridade (o menor)
+    public No remover() {
+        if (heap.isEmpty()) {
+            throw new IllegalStateException("A fila de prioridade está vazia.");
+        }
+        No raiz = heap.get(0); // O nó de maior prioridade
+        No ultimo = heap.remove(heap.size() - 1); // Remove o último nó
+        if (!heap.isEmpty()) {
+            heap.set(0, ultimo); // Coloca o último nó na raiz
+            descer(0); // Reorganiza o heap
+        }
+        return raiz; // Retorna o nó removido
+    }
+
+    // Retorna o tamanho da fila de prioridade
     public int size() {
         return heap.size();
     }
 
-    // Retorna o menor elemento (maior prioridade) sem removê-lo
-    public T peek() {
-        if (isEmpty()) {
-            return null;
-        }
-        return heap.get(0);
-    }
-
-    // Insere um elemento na fila
-    public void enqueue(T item) {
-        heap.add(item);  // Adiciona o novo elemento no final da lista
-        subir(heap.size() - 1);  // Corrige a posição para manter a propriedade da heap
-    }
-
-    // Remove e retorna o menor elemento (maior prioridade)
-    public T dequeue() {
-        if (isEmpty()) {
-            throw new IllegalStateException("Fila de prioridade está vazia");
-        }
-
-        T raiz = heap.get(0);  // Elemento com maior prioridade
-
-        // Substitui a raiz pelo último elemento e ajusta a heap
-        T ultimoElemento = heap.remove(heap.size() - 1);
-        if (!heap.isEmpty()) {
-            heap.set(0, ultimoElemento);
-            descer(0);
-        }
-
-        return raiz;
-    }
-
-    // Função para subir um elemento na heap (corrigir a posição após inserção)
+    // Reorganiza o heap para cima
     private void subir(int indice) {
-        int pai = (indice - 1) / 2;
-        // Se o elemento for menor que o pai, troca-os
-        while (indice > 0 && heap.get(indice).compareTo(heap.get(pai)) < 0) {
-            trocar(indice, pai);
-            indice = pai;
-            pai = (indice - 1) / 2;
+        while (indice > 0) {
+            int pai = (indice - 1) / 2; // Índice do pai
+            if (heap.get(indice).compareTo(heap.get(pai)) >= 0) {
+                break; // O heap está organizado
+            }
+            // Troca os nós
+            No temp = heap.get(indice);
+            heap.set(indice, heap.get(pai));
+            heap.set(pai, temp);
+            indice = pai; // Continua para o pai
         }
     }
 
-    // Função para descer um elemento na heap (corrigir a posição após remoção)
+    // Reorganiza o heap para baixo
     private void descer(int indice) {
         int tamanho = heap.size();
-        int menor = indice;
+        while (indice < tamanho) {
+            int menor = indice;
+            int esquerda = 2 * indice + 1; // Índice do filho à esquerda
+            int direita = 2 * indice + 2; // Índice do filho à direita
 
-        int esquerda = 2 * indice + 1;
-        int direita = 2 * indice + 2;
+            // Verifica o filho à esquerda
+            if (esquerda < tamanho && heap.get(esquerda).compareTo(heap.get(menor)) < 0) {
+                menor = esquerda;
+            }
 
-        // Verifica se o filho esquerdo tem menor valor
-        if (esquerda < tamanho && heap.get(esquerda).compareTo(heap.get(menor)) < 0) {
-            menor = esquerda;
+            // Verifica o filho à direita
+            if (direita < tamanho && heap.get(direita).compareTo(heap.get(menor)) < 0) {
+                menor = direita;
+            }
+
+            if (menor == indice) {
+                break; // O heap está organizado
+            }
+
+            // Troca os nós
+            No temp = heap.get(indice);
+            heap.set(indice, heap.get(menor));
+            heap.set(menor, temp);
+            indice = menor; // Continua para o menor filho
         }
-
-        // Verifica se o filho direito tem menor valor
-        if (direita < tamanho && heap.get(direita).compareTo(heap.get(menor)) < 0) {
-            menor = direita;
-        }
-
-        // Se o menor elemento não for o pai, troca-os
-        if (menor != indice) {
-            trocar(indice, menor);
-            descer(menor);  // Continua ajustando a heap
-        }
-    }
-
-    // Função para trocar dois elementos na heap
-    private void trocar(int i, int j) {
-        T temp = heap.get(i);
-        heap.set(i, heap.get(j));
-        heap.set(j, temp);
-    }
-    
-    // Imprime a fila de prioridade (heap)
-    public void printQueue() {
-        System.out.println(heap);
     }
 }

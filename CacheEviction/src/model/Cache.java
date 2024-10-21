@@ -3,7 +3,7 @@ public class Cache {
     private static final int CAPACIDADE_CACHE = 30; // Definindo capacidade para a cache
 
     public Cache() {
-        this.filaPrioridade = new FilaPrioridade<>(CAPACIDADE_CACHE);
+        this.filaPrioridade = new FilaPrioridade(CAPACIDADE_CACHE);
     }
 
     public No buscarOrdemServico(int codigoServico, Banco banco) throws MyPickException {
@@ -15,7 +15,7 @@ public class Cache {
                 return noAtual; // Retorna o que já está na fila
             }
             // Reordena a fila temporariamente
-            filaPrioridade.enqueue(filaPrioridade.dequeue());
+            filaPrioridade.inserir(filaPrioridade.remover());
         }
 
         // Busca no banco se não está na cache
@@ -23,9 +23,9 @@ public class Cache {
         if (noBanco != null) {
             // Adiciona o nó encontrado na fila de prioridade
             if (filaPrioridade.size() >= CAPACIDADE_CACHE) {
-                filaPrioridade.dequeue(); // Remove o menor (ou o de menor prioridade) para manter a capacidade
+                filaPrioridade.remover(); // Remove o menor (ou o de menor prioridade) para manter a capacidade
             }
-            filaPrioridade.enqueue(noBanco);
+            filaPrioridade.inserir(noBanco);
             System.out.println("Ordem de Serviço adicionada à cache.");
             return noBanco;
         }
@@ -42,13 +42,13 @@ public class Cache {
                 noAtual.serviceOrder.setDescricao(descricao); // Supondo que exista um método setDescricao
     
                 // Reorganiza a fila de prioridade, pois a prioridade pode ter mudado
-                filaPrioridade.dequeue(); // Remove o nó antigo
-                filaPrioridade.enqueue(noAtual); // Adiciona o nó atualizado
+                filaPrioridade.remover(); // Remove o nó antigo
+                filaPrioridade.inserir(noAtual); // Adiciona o nó atualizado
                 System.out.println("Ordem de Serviço atualizada na cache.");
                 return true; // Atualização bem-sucedida
             }
             // Reordena a fila temporariamente
-            filaPrioridade.enqueue(filaPrioridade.dequeue());
+            filaPrioridade.inserir(filaPrioridade.remover());
         }
     
         throw new MyPickException("Ordem de Serviço não encontrada na cache para atualização com o código: " + codigo);
@@ -59,12 +59,12 @@ public class Cache {
             No noAtual = filaPrioridade.peek();
             if (noAtual != null && noAtual.serviceOrder.getCodigoServico() == codigoServico) {
                 // O nó correspondente foi encontrado, removendo da fila
-                filaPrioridade.dequeue(); // Remove o nó com a ordem de serviço
+                filaPrioridade.remover(); // Remove o nó com a ordem de serviço
                 System.out.println("Ordem de Serviço removida da cache.");
                 return true; // Remoção bem-sucedida
             }
             // Reordena a fila temporariamente
-            filaPrioridade.enqueue(filaPrioridade.dequeue());
+            filaPrioridade.inserir(filaPrioridade.remover());
         }
 
         throw new MyPickException("Ordem de Serviço não encontrada na cache para remoção com o código: " + codigoServico);

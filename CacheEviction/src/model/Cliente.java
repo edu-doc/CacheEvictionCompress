@@ -2,7 +2,7 @@ import java.util.Scanner;
 
 public class Cliente {
 
-    private static Banco hash = new Banco();
+    private static Banco hash = new Banco(11);
     private static Cache mc = new Cache();
     private static Servidor server = new Servidor(hash, mc);
 

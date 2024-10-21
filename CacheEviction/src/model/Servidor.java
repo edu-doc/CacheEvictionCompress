@@ -7,20 +7,22 @@ public class Servidor {
     public Banco hash;
     public Log log = new Log();
 
-    private ClienteHuffman huffman;
+    private Huffman huffman;
 
     public Servidor(Banco hash, Cache mc){
         this.hash = hash;
         this.mc = mc;
+        this.huffman = new Huffman();
     }
 
     public void inserir (No no) throws MyPickException{
-        hash.adicionarOrdemComprimida(huffman.comprimir(no.getServiceOrder(), no.getFreq()));
+        System.out.println(no.getServiceOrder() + " " + no.getFreq());
+        hash.inserir(no);
         log.log("Inserido no banco", no, no.getServiceOrder().getCodigoServico(), mc.getFilaPrioridade());
     }
 
     public void inserirCliente (No no) throws MyPickException{
-        hash.adicionarOrdemComprimida(huffman.comprimir(no.getServiceOrder(), no.getFreq()));
+        hash.inserir(no);
         log.log("Inserido no banco", no, no.getServiceOrder().getCodigoServico(), mc.getFilaPrioridade());
     }
 
@@ -59,11 +61,8 @@ public class Servidor {
     }
 
     public void inserirNoCacheComLimite(int cod) throws MyPickException {
-        if (mc.tamanhoCache() < 30) {  // Verifica se a cache tem espaço disponível
-            mc.buscarOrdemServico(cod, hash);  // Insere o elemento na cache
-            log.log("Inserido na cache", mc.buscarOrdemServico(cod, hash), cod, mc.getFilaPrioridade());  // Log da inserção
-        } else {
-            System.out.println("Cache já está cheia! Não é possível inserir mais de " + 30 + " elementos.");
+        for (int i = 30; i < 61; i++){
+            buscar(i);
         }
     }
 

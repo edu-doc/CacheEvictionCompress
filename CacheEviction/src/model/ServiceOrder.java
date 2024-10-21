@@ -6,11 +6,21 @@ public class ServiceOrder {
     int codigoServico;
     String nome;
     String descricao;
-    
     LocalDateTime data = LocalDateTime.now();
     static DateTimeFormatter horaFormatada = DateTimeFormatter.ofPattern("HH:mm:ss");
-
     String hora;
+
+    // Arrays para armazenar caracteres e códigos de Huffman
+    private char[] caracteres; // Array de caracteres
+    private String[] codigos;  // Array de códigos Huffman
+
+    public char[] getCaracteres() {
+        return caracteres;
+    }
+
+    public String[] getCodigos() {
+        return codigos;
+    }
 
     // Construtor
     public ServiceOrder(String nome, String descricao) {
@@ -20,63 +30,83 @@ public class ServiceOrder {
         this.hora = horaFormatada.format(data);
     }
 
-    public ServiceOrder(int codigoServico, String descricao, String hora, String nome) {
-        this.codigoServico = codigoServico;
-        this.descricao = descricao;
-        this.hora = hora;
-        this.nome = nome;
-    }
-
-    public ServiceOrder(){
-
-    }
-
-    // Incrementa o contador e retorna o código de serviço formatado
+    // Incrementa o contador e retorna o código de serviço
     public static int getNextCodigo() {
         return ++count;  // Incrementa e retorna
     }
 
-    // Retorna o código do serviço com zeros à esquerda
-    public String getCodigoServicoFormatado() {
-        return String.format("%04d", codigoServico);  // Formata com 4 dígitos (0000)
+    // Método para inicializar os códigos Huffman
+    public void inicializarCodigos(char[] caracteres, String[] codigos) {
+        this.caracteres = caracteres;
+        this.codigos = codigos;
     }
 
-    public String getNome() {
-        return nome;
+    public FrequenciaResultado obterFrequencias() {
+        int[] frequencias = new int[256];
+        String todosOsAtributos = "Código de Serviço:" + getCodigoServico() + " Nome:" + nome + " Descrição:" + descricao + " Hora" + hora;
+    
+        for (char c : todosOsAtributos.toCharArray()) {
+            frequencias[c]++;
+        }
+    
+        int uniqueCount = 0;
+        for (int freq : frequencias) {
+            if (freq > 0) {
+                uniqueCount++;
+            }
+        }
+    
+        char[] caracteres = new char[uniqueCount];
+        int[] freqArray = new int[uniqueCount];
+    
+        int index = 0;
+        for (int i = 0; i < frequencias.length; i++) {
+            if (frequencias[i] > 0) {
+                caracteres[index] = (char) i;
+                freqArray[index] = frequencias[i];
+                index++;
+            }
+        }
+    
+        return new FrequenciaResultado(caracteres, freqArray); // Retorna a classe personalizada
     }
 
-    public String getDescricao() {
-        return descricao;
-    }
-
-    public String getHora() {
-        return hora;
+    public String comprimir() {
+        StringBuilder codigoHuffman = new StringBuilder();
+    
+        // Combina todos os atributos da ServiceOrder em uma única string com etiquetas
+        String texto = "Código de Serviço:" + getCodigoServico() + " Nome:" + nome + " Descrição:" + descricao + " Hora:" + hora;
+    
+        // Usa o método compressor para gerar a string comprimida
+        for (int i = 0; i < texto.length(); i++) {
+            char caractereAtual = texto.charAt(i);
+            boolean encontrado = false;
+    
+            // Encontra o código Huffman para o caractere atual
+            for (int j = 0; j < caracteres.length; j++) {
+                if (caracteres[j] == caractereAtual) {
+                    codigoHuffman.append(codigos[j]);
+                    encontrado = true;
+                    break;
+                }
+            }
+    
+            // Se não encontrou, adicione uma representação alternativa (opcional)
+            if (!encontrado) {
+                System.out.println("Caractere não encontrado: " + caractereAtual);
+            }
+        }
+    
+        return codigoHuffman.toString();
     }
 
     public int getCodigoServico() {
         return codigoServico;
     }
 
-    public void setCodigoServico(int codigoServico) {
-        this.codigoServico = codigoServico;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
-    public void setDescricao(String descricao) {
-        this.descricao = descricao;
-    }
-
-    public void setHora(String hora) {
-        this.hora = hora;
-    }
-
     @Override
     public String toString() {
-        return "ServiceOrder [Codigo de Serviço=" + getCodigoServicoFormatado() + ", Nome=" + nome + ", Descrição="
+        return "ServiceOrder [Codigo de Serviço=" + getCodigoServico() + ", Nome=" + nome + ", Descrição="
                 + descricao + ", Hora=" + hora + "]";
     }
-
 }
