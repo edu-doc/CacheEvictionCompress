@@ -7,12 +7,12 @@ public class Log {
     private static String path = "log.txt";
 
     // Método para registrar ações na cache
-    public void log(String acao, ServiceOrder order, ListaAutoAjustavel<ServiceOrder> LAA) {
+    public void log(String acao, ServiceOrder order, Cache cache, Banco bc) throws MyPickException {
         StringBuilder filaString = new StringBuilder();
         
         // Converte a lista autoajustável para uma representação de string
-        for (int i = 0; i < LAA.tamanho(); i++) {
-            ServiceOrder orderFila = LAA.obter(i); // Obtém o elemento da lista
+        for (int i = 0; i < cache.tamanhoCache(); i++) {
+            ServiceOrder orderFila = cache.buscarOrdemServico(i, bc); // Obtém o elemento da lista
             if (orderFila != null) {
                 filaString.append("[").append(orderFila.getCodigoServico()).append("]");
             } else {

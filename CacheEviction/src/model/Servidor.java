@@ -5,8 +5,6 @@ public class Servidor {
     public Banco hash;
     public Log log = new Log();
 
-    private Huffman huffman;
-
     ServiceOrder so;
 
     public Servidor(Banco hash, Cache mc){
@@ -18,12 +16,12 @@ public class Servidor {
         String des = huff.descomprimir(str);
         so = so.fromString(des);
         hash.inserir(so);
-        log.log("Inserido no banco", so, mc.getListaCache());
+        log.log("Inserido no banco", so, mc, hash);
     }
 
-    public void inserirInicial (ServiceOrder order){
+    public void inserirInicial (ServiceOrder order) throws MyPickException{
         hash.inserir(order);
-        log.log("Inserido no banco", order, mc.getListaCache());
+        log.log("Inserido no banco", order, mc, hash);
     }
 
     public void remover (int codigo) throws MyPickException{
@@ -33,7 +31,7 @@ public class Servidor {
 
     public void buscar(int codigo) throws MyPickException{
         mc.buscarOrdemServico(codigo, hash);
-        log.log("Buscado e inserido na cache", hash.buscar(codigo), mc.getListaCache());
+        log.log("Buscado e inserido na cache", hash.buscar(codigo), mc, hash);
     }
 
     public void listar(){
@@ -57,7 +55,7 @@ public class Servidor {
     public void update(Banco hash, int cod, String nome, String descricao) throws MyPickException{
         hash.atualizar(cod, nome, descricao);
         mc.atualizarOrdemServico(cod, nome, descricao);
-        log.log("Atualizado na cache e no banco", hash.buscar(cod), mc.getListaCache());
+        log.log("Atualizado na cache e no banco", hash.buscar(cod), mc, hash);
     }
 
     public void inserirNoCacheComLimite(int cod) throws MyPickException {
