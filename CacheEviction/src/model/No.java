@@ -1,19 +1,20 @@
-class No implements Comparable<No> {
-    char caractere;
-    int freq;
-    No esquerda, direita;
+public class No {
+    
+    public No proximo;
 
-    public No(char caractere, int freq) {
-        this.caractere = caractere;
-        this.freq = freq;
-        this.esquerda = null;
-        this.direita = null;
+    public ServiceOrder order;
+
+    public No (ServiceOrder order){
+        this.order = order;
     }
 
-    public No(){}
+    public ServiceOrder getOrder(){
+        return order;
+    }
 
     @Override
-    public int compareTo(No outro) {
-        return Integer.compare(this.freq, outro.freq); // Compara pela frequência
+    public String toString() {
+        return "["+order.codigoServico+"]";
     }
+
 }

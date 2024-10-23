@@ -1,32 +1,32 @@
 class Huffman {
-    No raiz;
+    No1 raiz;
     char[] caracteres; // Vetor de caracteres usados para gerar a árvore
 
     // Método para construir a árvore de Huffman
     void construirArvore(int n, char[] arrayCaracteres, int[] arrayFrequencias) {
-        FilaPrioridade<No> heapMinimo = new FilaPrioridade(n);
+        FilaPrioridade<No1> heapMinimo = new FilaPrioridade(n);
 
         // Inicializando os vetores de caracteres
         this.caracteres = arrayCaracteres;
 
         for (int i = 0; i < n; i++) {
-            No no = new No();
+            No1 no = new No1();
             no.caractere = arrayCaracteres[i];
             no.freq = arrayFrequencias[i];
             no.esquerda = null;
             no.direita = null;
-            heapMinimo.inserir(no);
+            heapMinimo.adicionar(no, no.freq);
         }
 
-        while (heapMinimo.size() > 1) {
-            No x = heapMinimo.remover();
-            No y = heapMinimo.remover();
-            No z = new No();
+        while (heapMinimo.tamanho() > 1) {
+            No1 x = heapMinimo.remover();
+            No1 y = heapMinimo.remover();
+            No1 z = new No1();
             z.freq = x.freq + y.freq;
             z.caractere = '-'; // Caractere especial para nós internos
             z.esquerda = x;
             z.direita = y;
-            heapMinimo.inserir(z);
+            heapMinimo.adicionar(z, z.freq);
         }
 
         // A raiz é o último nó restante na fila
@@ -41,7 +41,7 @@ class Huffman {
     }
 
     // Método recursivo para gerar os códigos de Huffman
-    private void gerarCodigosRecursivo(No no, String codigoAtual, String[] codigos) {
+    private void gerarCodigosRecursivo(No1 no, String codigoAtual, String[] codigos) {
         if (no.esquerda == null && no.direita == null && isCharValido(no.caractere)) {
             // Quando encontrar uma folha, armazena o código no vetor de códigos
             for (int i = 0; i < caracteres.length; i++) {
@@ -68,7 +68,7 @@ class Huffman {
     // Método para descomprimir uma string usando a árvore de Huffman
     public String descomprimir(String codigo) {
         StringBuilder textoDescomprimido = new StringBuilder();
-        No atual = raiz;
+        No1 atual = raiz;
 
         for (int i = 0; i < codigo.length(); i++) {
             char bit = codigo.charAt(i);

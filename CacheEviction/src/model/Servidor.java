@@ -5,6 +5,9 @@ public class Servidor {
     public Banco hash;
     public Log log = new Log();
 
+    FrequenciaResultado freq;
+    Huffman huff;
+
     ServiceOrder so;
 
     public Servidor(Banco hash, Cache mc){
@@ -15,23 +18,32 @@ public class Servidor {
     public void inserir (String str, Huffman huff) throws MyPickException{
         String des = huff.descomprimir(str);
         so = so.fromString(des);
-        hash.inserir(so);
-        log.log("Inserido no banco", so, mc, hash);
+        No no = new No(so);
+        hash.inserir(no);
+        log.log("Cadastro", no, mc, hash);
     }
 
     public void inserirInicial (ServiceOrder order) throws MyPickException{
-        hash.inserir(order);
-        log.log("Inserido no banco", order, mc, hash);
+        No no = new No(order);
+        hash.inserir(no);
+        log.log("Cadastro", no, mc, hash);
     }
 
     public void remover (int codigo) throws MyPickException{
         hash.remover(codigo);
-        mc.removerOrdemServico(codigo);
+        mc.remover(codigo);
+        log.log("Remover", hash.buscar(codigo), mc, hash);
     }
 
-    public void buscar(int codigo) throws MyPickException{
-        mc.buscarOrdemServico(codigo, hash);
+    public EnviarCompressao buscar(int codigo) throws MyPickException{
+        ServiceOrder sc = mc.buscar(codigo, hash).order;
+        freq = sc.obterFrequencias();
+        huff = new Huffman();
+        huff.construirArvore(freq.caracteres.length, freq.caracteres, freq.frequencias);
+        sc.inicializarCodigos(freq.caracteres, huff.gerarCodigos());
         log.log("Buscado e inserido na cache", hash.buscar(codigo), mc, hash);
+        EnviarCompressao ev = new EnviarCompressao(huff, sc.comprimir());
+        return ev;
     }
 
     public void listar(){
@@ -54,11 +66,11 @@ public class Servidor {
 
     public void update(Banco hash, int cod, String nome, String descricao) throws MyPickException{
         hash.atualizar(cod, nome, descricao);
-        mc.atualizarOrdemServico(cod, nome, descricao);
+        mc.atualizar(cod, nome, descricao);
         log.log("Atualizado na cache e no banco", hash.buscar(cod), mc, hash);
     }
 
-    public void inserirNoCacheComLimite(int cod) throws MyPickException {
+    public void inserirNoCacheComLimite() throws MyPickException {
         for (int i = 30; i < 60; i++){
             buscar(i);
         }
@@ -138,6 +150,37 @@ public class Servidor {
         ServiceOrder order68 = new ServiceOrder("Simone", "Erro: Falha na transferência de dados");
         ServiceOrder order69 = new ServiceOrder("Anderson", "Erro: Erro de sincronização de tempo");
         ServiceOrder order70 = new ServiceOrder("Luiza", "Erro: Falha na autenticação de usuário");
+        ServiceOrder order71 = new ServiceOrder("Instalação de Software", "Erro: Instalação de software de gerenciamento.");
+        ServiceOrder order72 = new ServiceOrder("Atualização de Sistema", "Erro: Atualização de sistema operacional para a versão mais recente.");
+        ServiceOrder order73 = new ServiceOrder("Configuração de Rede", "Erro: Configuração de rede local para novos dispositivos.");
+        ServiceOrder order74 = new ServiceOrder("Substituição de Hardware", "Erro: Substituição de disco rígido por um SSD.");
+        ServiceOrder order75 = new ServiceOrder("Treinamento de Usuários", "Erro: Treinamento para uso de novo software.");
+        ServiceOrder order76 = new ServiceOrder("Reparo de Laptop", "Erro: Reparo em laptop com tela quebrada.");
+        ServiceOrder order77 = new ServiceOrder("Backup de Dados", "Erro: Execução de backup completo dos dados.");
+        ServiceOrder order78 = new ServiceOrder("Instalação de Antivírus", "Erro: Instalação e configuração de software antivírus.");
+        ServiceOrder order79 = new ServiceOrder("Limpeza de Software", "Erro: Limpeza de programas indesejados do sistema.");
+        ServiceOrder order80 = new ServiceOrder("Verificação de Segurança", "Erro: Análise de segurança em sistemas e redes.");
+        ServiceOrder order81 = new ServiceOrder("Desinstalação de Programa", "Erro: Remoção de software desnecessário do sistema.");
+        ServiceOrder order82 = new ServiceOrder("Atualização de Firmware", "Erro: Atualização do firmware de dispositivos de rede.");
+        ServiceOrder order83 = new ServiceOrder("Configuração de Impressora", "Erro: Configuração de impressora em rede.");
+        ServiceOrder order84 = new ServiceOrder("Desenvolvimento de Software", "Erro: Desenvolvimento de um aplicativo para gerenciamento.");
+        ServiceOrder order85 = new ServiceOrder("Auditoria de Sistemas", "Erro: Auditoria de segurança e eficiência do sistema.");
+        ServiceOrder order86 = new ServiceOrder("Suporte Técnico Remoto", "Erro: Assistência técnica via acesso remoto.");
+        ServiceOrder order87 = new ServiceOrder("Reparo de Teclado", "Erro: Reparo de teclado de laptop com teclas faltando.");
+        ServiceOrder order88 = new ServiceOrder("Configuração de Servidor", "Erro: Configuração de um novo servidor de arquivos.");
+        ServiceOrder order89 = new ServiceOrder("Instalação de Rede Wi-Fi", "Erro: Instalação de pontos de acesso Wi-Fi.");
+        ServiceOrder order90 = new ServiceOrder("Recuperação de Dados", "Erro: Recuperação de dados de disco rígido danificado.");
+        ServiceOrder order91 = new ServiceOrder("Reparo de Monitor", "Erro: Reparo de monitor com problemas de display.");
+        ServiceOrder order92 = new ServiceOrder("Configuração de Novo PC", "Erro: Configuração de um novo computador pessoal.");
+        ServiceOrder order93 = new ServiceOrder("Limpeza de Hardware", "Erro: Limpeza interna de componentes de hardware.");
+        ServiceOrder order94 = new ServiceOrder("Teste de Sistema", "Erro: Teste de funcionalidade e desempenho do sistema.");
+        ServiceOrder order95 = new ServiceOrder("Implementação de Backup", "Erro: Configuração de rotinas de backup.");
+        ServiceOrder order96 = new ServiceOrder("Troca de Bateria", "Erro: Substituição da bateria de laptop.");
+        ServiceOrder order97 = new ServiceOrder("Instalação de Equipamento", "Erro: Instalação de equipamento de áudio.");
+        ServiceOrder order98 = new ServiceOrder("Auditoria de Rede", "Erro: Auditoria de segurança da rede.");
+        ServiceOrder order99 = new ServiceOrder("Suporte de Emergência", "Erro: Suporte técnico em caso de emergência.");
+        ServiceOrder order100 = new ServiceOrder("Formatação de Computador", "Erro: Formatação completa e instalação do sistema operacional.");
+
 
         inserirInicial(order1);
         inserirInicial(order2);
@@ -209,6 +252,39 @@ public class Servidor {
         inserirInicial(order68);
         inserirInicial(order69);
         inserirInicial(order70);
+        inserirInicial(order71);
+        inserirInicial(order72);
+        inserirInicial(order73);
+        inserirInicial(order74);
+        inserirInicial(order75);
+        inserirInicial(order76);
+        inserirInicial(order77);
+        inserirInicial(order78);
+        inserirInicial(order79);
+        inserirInicial(order80);
+        inserirInicial(order81);
+        inserirInicial(order82);
+        inserirInicial(order83);
+        inserirInicial(order84);
+        inserirInicial(order85);
+        inserirInicial(order86);
+        inserirInicial(order87);
+        inserirInicial(order88);
+        inserirInicial(order89);
+        inserirInicial(order90);
+        inserirInicial(order91);
+        inserirInicial(order92);
+        inserirInicial(order93);
+        inserirInicial(order94);
+        inserirInicial(order95);
+        inserirInicial(order96);
+        inserirInicial(order97);
+        inserirInicial(order98);
+        inserirInicial(order99);
+        inserirInicial(order100);
+
+
+        inserirNoCacheComLimite();
 
     }
 

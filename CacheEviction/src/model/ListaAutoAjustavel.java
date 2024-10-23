@@ -1,72 +1,58 @@
-public class ListaAutoAjustavel {
-    private Object[] elementos;
-    private int tamanho;
+import java.util.Arrays;
 
-    // Construtor
+public class ListaAutoAjustavel<T> {
+    private T[] array;
+    private int size;
+
+    @SuppressWarnings("unchecked")
     public ListaAutoAjustavel(int cap) {
-        elementos = new Object[cap];
-        tamanho = 0;
+        array = (T[]) new Object[cap];
+        size = 0;
     }
 
-    // Método para adicionar um elemento na primeira posição
-    public void adicionar(Object elemento) {
-        if (tamanho == elementos.length) {
-            aumentarCapacidade();
+    public void add(T element) {
+        if (size == array.length) {
+            resize(array.length * 2); // Dobrar o tamanho do array
         }
-
-        // Move todos os elementos para a direita
-        System.arraycopy(elementos, 0, elementos, 1, tamanho);
-        elementos[0] = elemento; // Insere o novo elemento na primeira posição
-        tamanho++;
+        array[size++] = element;
     }
 
-    // Método para aumentar a capacidade do array
-    private void aumentarCapacidade() {
-        int novaCapacidade = elementos.length * 2;
-        Object[] novoArray = new Object[novaCapacidade];
-        System.arraycopy(elementos, 0, novoArray, 0, elementos.length);
-        elementos = novoArray;
-    }
-
-    // Método para remover o elemento mais antigo (o último elemento na lista)
-    public boolean remover() {
-        if (tamanho == 0) {
-            return false; // Se a lista estiver vazia, não há nada para remover
+    public T remove(int index) {
+        if (index < 0 || index >= size) {
+            throw new IndexOutOfBoundsException("Índice fora dos limites.");
         }
-        elementos[--tamanho] = null; // Remove a referência ao último elemento
-        return true;
-    }
-
-    // Método para remover um elemento pelo índice
-    public boolean remover(int indice) {
-        if (indice < 0 || indice >= tamanho) {
-            throw new IndexOutOfBoundsException("Índice fora do limite: " + indice);
+    
+        T removedElement = array[index];
+        for (int i = index; i < size - 1; i++) {
+            array[i] = array[i + 1];
         }
-
-        // Move os elementos para a esquerda a partir do índice
-        System.arraycopy(elementos, indice + 1, elementos, indice, tamanho - indice - 1);
-        elementos[--tamanho] = null; // Remove a referência ao último elemento
-        return true; // Retorna true se a remoção for bem-sucedida
-    }
-
-    // Método para obter o tamanho da lista
-    public int tamanho() {
-        return tamanho;
-    }
-
-    // Método para obter um elemento por índice
-    public Object obter(int indice) {
-        if (indice < 0 || indice >= tamanho) {
-            throw new IndexOutOfBoundsException("Índice fora do limite: " + indice);
+        array[--size] = null; // Limpa a referência
+        if (size > 0 && size == array.length / 4) {
+            resize(array.length / 2); // Reduzir o tamanho do array se necessário
         }
-        return elementos[indice];
+        return removedElement; // Retorna o elemento removido
+    }
+    
+
+    public T get(int index) {
+        if (index < 0 || index >= size) {
+            throw new IndexOutOfBoundsException("Índice fora dos limites.");
+        }
+        return array[index];
     }
 
-    // Método para imprimir os elementos da lista
-    public void imprimir() {
-        for (int i = 0; i < tamanho; i++) {
-            System.out.print(elementos[i] + " ");
-        }
-        System.out.println();
+    public int size() {
+        return size;
+    }
+
+    public boolean isEmpty() {
+        return size == 0;
+    }
+
+    @SuppressWarnings("unchecked")
+    private void resize(int newCapacity) {
+        T[] newArray = (T[]) new Object[newCapacity];
+        System.arraycopy(array, 0, newArray, 0, size);
+        array = newArray;
     }
 }

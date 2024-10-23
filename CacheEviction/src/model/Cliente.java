@@ -22,7 +22,7 @@ public class Cliente {
 
             processarOpcao(opcao, sc);
             
-        } while (opcao != 7);
+        } while (opcao != 8);
 
 
         sc.close();
@@ -36,7 +36,8 @@ public class Cliente {
         System.out.println("4. Remover OS");
         System.out.println("5. Buscar OS");
         System.out.println("6. Acessar quantidade de OS");
-        System.out.println("7. Sair");
+        System.out.println("7. Buscar ocorrencia de cadastro e remoção no Log: ");
+        System.out.println("8. Sair");
         System.out.print("Escolha uma opção: ");
         System.out.println("");
     }
@@ -74,6 +75,10 @@ public class Cliente {
                 server.listarCache();
                 break;
             case 7:
+                buscarNoLog(sc);
+                System.out.println();
+                break;
+            case 8:
                 System.out.println("Saindo");
                 break;
             default:
@@ -138,11 +143,29 @@ public class Cliente {
         int codigo = sc.nextInt();
 
         try {
-            server.buscar(codigo);
+            System.out.println("");
+            System.out.println("Huffman Comprimido na tela do cliente: "+ server.buscar(codigo).compressao);
+            System.out.println("");
+            System.out.println("Huffman Descomprimido na tela do cliente: "+server.buscar(codigo).huff.descomprimir(server.buscar(codigo).compressao));
+            
         } catch (MyPickException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+    }
+
+    private static void buscarNoLog(Scanner sc){
+        System.out.println("Digite 1 caso você queria buscar cadastro ou 2 para remoção");
+        int codigo = sc.nextInt();
+        String palavra;
+        if (codigo == 1){
+            palavra = "Cadastro";
+        } else {
+            palavra = "Remover";
+        }
+
+        LogProcessor log = new LogProcessor();
+        log.buscarOperacoes(palavra);
     }
 }
     
