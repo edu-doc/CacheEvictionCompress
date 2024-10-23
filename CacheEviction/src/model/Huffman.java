@@ -4,7 +4,7 @@ class Huffman {
 
     // Método para construir a árvore de Huffman
     void construirArvore(int n, char[] arrayCaracteres, int[] arrayFrequencias) {
-        FilaPrioridade heapMinimo = new FilaPrioridade(n);
+        FilaPrioridade<No> heapMinimo = new FilaPrioridade(n);
 
         // Inicializando os vetores de caracteres
         this.caracteres = arrayCaracteres;

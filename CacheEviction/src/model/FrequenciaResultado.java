@@ -6,4 +6,5 @@ class FrequenciaResultado {
         this.caracteres = caracteres;
         this.frequencias = frequencias;
     }
+
 }

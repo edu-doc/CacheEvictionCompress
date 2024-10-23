@@ -1,52 +1,50 @@
-import java.util.LinkedList;
-import java.util.Random;
-
 public class Banco {
-
     private int M; // Tamanho da tabela hash
     private int n; // Número de elementos na tabela
-    public LinkedList<ServiceOrder>[] tabela;
+    private ListaAutoAjustavel<ServiceOrder>[] tabela; // Usando ListaAutoAjustavel em vez de LinkedList
 
+    @SuppressWarnings("unchecked")
     public Banco(int tamanho) {
         this.M = tamanho;
         this.n = 0;
-        this.tabela = new LinkedList[this.M];
+        this.tabela = new ListaAutoAjustavel[this.M]; // Inicializa a tabela
         inicializarTabela();
     }
 
     private void inicializarTabela() {
         for (int i = 0; i < this.M; i++) {
-            this.tabela[i] = new LinkedList<>();
+            this.tabela[i] = new ListaAutoAjustavel<>(2); // Inicializa cada lista com capacidade inicial 2
         }
     }
 
     private int calcularHash(int chave) {
         int x = encontrarPrimoAnterior(this.M);
-        return chave % x;
+        return chave % x; // Cálculo do índice da tabela hash
     }
 
-    public void inserir(ServiceOrder sc) {
-        int indice = calcularHash(sc.getCodigoServico());
-        LinkedList<ServiceOrder> lista = this.tabela[indice];
+    public void inserir(ServiceOrder serviceOrder) {
+        int indice = calcularHash(serviceOrder.codigoServico);
+        ListaAutoAjustavel<ServiceOrder> lista = this.tabela[indice];
 
         // Evita duplicatas
-        for (ServiceOrder order : lista) {
-            if (sc.getCodigoServico() == order.getCodigoServico()) {
+        for (int i = 0; i < lista.tamanho(); i++) {
+            if (lista.obter(i).codigoServico == serviceOrder.codigoServico) {
                 return; // Se já existe, não insere
             }
         }
 
-        lista.add(sc); // Adiciona o novo nó
+        lista.adicionar(serviceOrder); // Adiciona o novo ServiceOrder
         n++;
     }
 
     public ServiceOrder buscar(int chave) {
         int indice = calcularHash(chave);
-        LinkedList<ServiceOrder> lista = this.tabela[indice];
+        ListaAutoAjustavel<ServiceOrder> lista = this.tabela[indice];
 
-        for (ServiceOrder order : lista) {
-            if (order.getCodigoServico() == chave) {
-                return order; // Retorna o nó encontrado
+        for (int i = 0; i < lista.tamanho(); i++) {
+            ServiceOrder serviceOrder = lista.obter(i);
+            if (serviceOrder.codigoServico == chave) {
+                return serviceOrder; // Retorna o ServiceOrder encontrado
             }
         }
         return null; // Não encontrado
@@ -54,13 +52,14 @@ public class Banco {
 
     public ServiceOrder remover(int chave) {
         int indice = calcularHash(chave);
-        LinkedList<ServiceOrder> lista = this.tabela[indice];
+        ListaAutoAjustavel<ServiceOrder> lista = this.tabela[indice];
 
-        for (ServiceOrder order : lista) {
-            if (order.getCodigoServico() == chave) {
-                lista.remove(order); // Remove o nó da lista
+        for (int i = 0; i < lista.tamanho(); i++) {
+            ServiceOrder serviceOrder = lista.obter(i);
+            if (serviceOrder.codigoServico == chave) {
+                lista.remover(i); // Remove o ServiceOrder da lista
                 n--;
-                return order; // Retorna o nó removido
+                return serviceOrder; // Retorna o ServiceOrder removido
             }
         }
         return null; // Não encontrado
@@ -68,38 +67,34 @@ public class Banco {
 
     public boolean atualizar(int codigoServico, String nome, String descricao) {
         int indice = calcularHash(codigoServico);
-        LinkedList<ServiceOrder> lista = this.tabela[indice];
-    
-        if (lista == null) {
-            System.out.println("Nenhum Service Order encontrado");
-            return false;
-        }
-    
-        for (ServiceOrder order : lista) {
-            if (order.getCodigoServico() == codigoServico) {
-                // Atualiza os atributos do nó existente
-                order.codigoServico = codigoServico; // Atualiza o código do serviço
-                order.nome = nome;                   // Atualiza o nome do serviço
-                order.descricao = descricao;         // Atualiza a descrição do serviço
-    
+        ListaAutoAjustavel<ServiceOrder> lista = this.tabela[indice];
+
+        for (int i = 0; i < lista.tamanho(); i++) {
+            ServiceOrder serviceOrder = lista.obter(i);
+            if (serviceOrder.codigoServico == codigoServico) {
+                // Atualiza os atributos do ServiceOrder existente
+                serviceOrder.nome = nome;                   // Atualiza o nome do serviço
+                serviceOrder.descricao = descricao;         // Atualiza a descrição do serviço
+
                 System.out.println("Service Order atualizado: " + codigoServico);
                 return true; // Retorna true se a atualização foi bem-sucedida
             }
         }
         System.out.println("Service Order não encontrado para atualização.");
-        return false; // Retorna false se o nó não foi encontrado para atualização
+        return false; // Retorna false se o ServiceOrder não foi encontrado para atualização
     }
-    
+
     public void imprimirTabelaHash() {
         for (int i = 0; i < this.M; i++) {
             System.out.print(i + " -> ");
-            LinkedList<ServiceOrder> lista = this.tabela[i];
+            ListaAutoAjustavel<ServiceOrder> lista = this.tabela[i];
 
-            if (lista.isEmpty()) {
+            if (lista.tamanho() == 0) {
                 System.out.println("null");
             } else {
-                for (ServiceOrder order : lista) {
-                    System.out.print(order.codigoServico + " ");
+                for (int j = 0; j < lista.tamanho(); j++) {
+                    ServiceOrder serviceOrder = lista.obter(j);
+                    System.out.print(serviceOrder.codigoServico + " ");
                 }
                 System.out.println();
             }
@@ -107,9 +102,9 @@ public class Banco {
     }
 
     public void listarElementos() {
-        for (LinkedList<ServiceOrder> lista : tabela) {
-            for (ServiceOrder order : lista) {
-                printarOrder(order);
+        for (ListaAutoAjustavel<ServiceOrder> lista : tabela) {
+            for (int i = 0; i < lista.tamanho(); i++) {
+                printarServiceOrder(lista.obter(i));
             }
         }
     }
@@ -121,14 +116,14 @@ public class Banco {
     }
 
     public void redimensionarTabela(boolean aumentar) {
-        LinkedList<ServiceOrder>[] tabelaAntiga = tabela;
+        ListaAutoAjustavel<ServiceOrder>[] tabelaAntiga = tabela;
         M = aumentar ? encontrarProximoPrimo(M * 2) : encontrarPrimoAnterior(M / 2);
-        tabela = new LinkedList[M];
+        tabela = new ListaAutoAjustavel[M];
         inicializarTabela();
 
-        for (LinkedList<ServiceOrder> lista : tabelaAntiga) {
-            for (ServiceOrder order : lista) {
-                inserir(order); // Reinsere os elementos na nova tabela
+        for (ListaAutoAjustavel<ServiceOrder> lista : tabelaAntiga) {
+            for (int i = 0; i < lista.tamanho(); i++) {
+                inserir(lista.obter(i)); // Reinsere os elementos na nova tabela
             }
         }
         n = contarElementos();
@@ -161,37 +156,17 @@ public class Banco {
 
     private int contarElementos() {
         int total = 0;
-        for (LinkedList<ServiceOrder> lista : tabela) {
-            total += lista.size();
+        for (ListaAutoAjustavel<ServiceOrder> lista : tabela) {
+            total += lista.tamanho();
         }
         return total;
     }
 
-    private void printarOrder(ServiceOrder sc) {
-        System.out.println("Código: " + sc.codigoServico);
-        System.out.println("Nome: " + sc.nome);
-        System.out.println("Descrição: " + sc.descricao);
-        System.out.println("Hora: " + sc.hora);
-    }
-
-    public ServiceOrder sortearElemento() {
-        Random random = new Random();
-        ServiceOrder scSorteado = null;
-
-        while (scSorteado == null) {
-            int indiceTabela = random.nextInt(M);
-            LinkedList<ServiceOrder> lista = tabela[indiceTabela];
-
-            if (!lista.isEmpty()) {
-                int indiceLista = random.nextInt(lista.size());
-                scSorteado = lista.get(indiceLista);
-            }
-        }
-
-        System.out.println("Service Order sorteado: ");
-        printarOrder(scSorteado);
-
-        return scSorteado;
+    private void printarServiceOrder(ServiceOrder serviceOrder) {
+        System.out.println("Código: " + serviceOrder.codigoServico);
+        System.out.println("Nome: " + serviceOrder.nome);
+        System.out.println("Descrição: " + serviceOrder.descricao);
+        System.out.println("Hora: " + serviceOrder.hora);
     }
 
     public int tamanho() {

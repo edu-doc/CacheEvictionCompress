@@ -7,25 +7,23 @@ public class Log {
     private static String path = "log.txt";
 
     // Método para registrar ações na cache
-    public void log(String acao, No no, int codigo, FilaPrioridade<No> filaPrioridade) {
+    public void log(String acao, ServiceOrder order, ListaAutoAjustavel<ServiceOrder> LAA) {
         StringBuilder filaString = new StringBuilder();
         
-        // Converte a fila de prioridade para uma representação de string
-        for (int i = 0; i < filaPrioridade.size(); i++) {
-            No noFila = filaPrioridade.peek(); // Obtém o elemento da fila
-            if (noFila != null && noFila.getServiceOrder() != null) {
-                filaString.append("[").append(noFila.getServiceOrder().getCodigoServicoFormatado()).append("]");
+        // Converte a lista autoajustável para uma representação de string
+        for (int i = 0; i < LAA.tamanho(); i++) {
+            ServiceOrder orderFila = LAA.obter(i); // Obtém o elemento da lista
+            if (orderFila != null) {
+                filaString.append("[").append(orderFila.getCodigoServico()).append("]");
             } else {
                 filaString.append("[null]");
             }
-            filaPrioridade.enqueue(filaPrioridade.dequeue()); // Reordena a fila
         }
 
         String message = String.format(
-                "Ação: %s, Nó: %s, Código da Ordem de Serviço: %d, Fila de Cache: %s%n",
+                "Ação: %s, Código da Ordem de Serviço: %d, Fila de Cache: %s%n",
                 acao,
-                no != null ? no.toString() : "null",
-                no != null && no.getServiceOrder() != null ? no.getServiceOrder().getCodigoServico() : -1,
+                order != null ? order.getCodigoServico() : -1,  // Corrigido para evitar 'null'
                 filaString.toString()
         );
 

@@ -1,7 +1,7 @@
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-public class ServiceOrder {
+public class ServiceOrder implements Comparable<ServiceOrder> {
     static int count = 0;  // Começa de 0
     int codigoServico;
     String nome;
@@ -36,7 +36,35 @@ public class ServiceOrder {
 
     // Incrementa o contador e retorna o código de serviço
     public static int getNextCodigo() {
-        return ++count;  // Incrementa e retorna
+        return count++;  // Incrementa e retorna
+    }
+
+    public void setCodigoServico(int codigoServico) {
+        this.codigoServico = codigoServico;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
+    }
+
+    public void setHora(String hora) {
+        this.hora = hora;
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public String getDescricao() {
+        return descricao;
+    }
+
+    public String getHora() {
+        return hora;
     }
 
     // Método para inicializar os códigos Huffman
@@ -114,8 +142,9 @@ public class ServiceOrder {
         
         // Extrai os valores de cada campo
         String codigoServicoStr = partes[0].replace("Código de Serviço:", "").trim();
-        int codigoServico = Integer.parseInt(codigoServicoStr);  // Converte para int
         
+        int codigoServico = (int) Double.parseDouble(codigoServicoStr);
+
         String nome = partes[1].trim();  // Nome
         
         String descricao = partes[2].trim();  // Descrição
@@ -133,6 +162,33 @@ public class ServiceOrder {
         
         return serviceOrder;
     }    
+
+    @Override
+    public int compareTo(ServiceOrder outro) {
+        return Integer.compare(this.codigoServico, outro.codigoServico);
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + codigoServico;
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        ServiceOrder other = (ServiceOrder) obj;
+        if (codigoServico != other.codigoServico)
+            return false;
+        return true;
+    }
 
     @Override
     public String toString() {

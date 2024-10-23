@@ -6,6 +6,9 @@ public class Cliente {
     private static Cache mc = new Cache();
     private static Servidor server = new Servidor(hash, mc);
 
+    private static Huffman huff;
+    private static FrequenciaResultado freq;
+
     
     public static void main(String[] args) throws Exception {
         server.inicializar();
@@ -87,9 +90,16 @@ public class Cliente {
         String desc = sc.nextLine();
 
         ServiceOrder so = new ServiceOrder(nome, desc);
-        No no = new No(so,1);
 
-        server.inserirCliente(no);
+        freq = so.obterFrequencias();
+
+        huff = new Huffman();
+
+        huff.construirArvore(freq.caracteres.length, freq.caracteres, freq.frequencias);
+
+        so.inicializarCodigos(freq.caracteres, huff.gerarCodigos());
+
+        server.inserir(so.comprimir(), huff);
     }
 
     private static void alterarOS(Scanner sc)  {

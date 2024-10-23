@@ -1,5 +1,3 @@
-import java.util.ArrayList;
-import java.util.List;
 
 public class Servidor {
 
@@ -9,21 +7,23 @@ public class Servidor {
 
     private Huffman huffman;
 
+    ServiceOrder so;
+
     public Servidor(Banco hash, Cache mc){
         this.hash = hash;
         this.mc = mc;
-        this.huffman = new Huffman();
     }
 
-    public void inserir (String str) throws MyPickException{
-        ServiceOrder sc = sc.fromString(str);
-        hash.inserir(sc);
-        log.log("Inserido no banco", no, no.getServiceOrder().getCodigoServico(), mc.getFilaPrioridade());
+    public void inserir (String str, Huffman huff) throws MyPickException{
+        String des = huff.descomprimir(str);
+        so = so.fromString(des);
+        hash.inserir(so);
+        log.log("Inserido no banco", so, mc.getListaCache());
     }
 
-    public void inserirCliente (No no) throws MyPickException{
-        hash.inserir(no);
-        log.log("Inserido no banco", no, no.getServiceOrder().getCodigoServico(), mc.getFilaPrioridade());
+    public void inserirInicial (ServiceOrder order){
+        hash.inserir(order);
+        log.log("Inserido no banco", order, mc.getListaCache());
     }
 
     public void remover (int codigo) throws MyPickException{
@@ -33,17 +33,17 @@ public class Servidor {
 
     public void buscar(int codigo) throws MyPickException{
         mc.buscarOrdemServico(codigo, hash);
-        log.log("Buscado e inserido na cache", hash.buscar(codigo), hash.buscar(codigo).getServiceOrder().getCodigoServico(), mc.getFilaPrioridade());
+        log.log("Buscado e inserido na cache", hash.buscar(codigo), mc.getListaCache());
     }
 
     public void listar(){
-        mc.imprimirFila();;
+        mc.imprimirCache();
         System.out.println("");
         hash.imprimirTabelaHash();
     }
 
     public void listarCache(){
-        mc.imprimirFila();;
+        mc.imprimirCache();
     }
 
     public void listarHash(){
@@ -57,11 +57,11 @@ public class Servidor {
     public void update(Banco hash, int cod, String nome, String descricao) throws MyPickException{
         hash.atualizar(cod, nome, descricao);
         mc.atualizarOrdemServico(cod, nome, descricao);
-        log.log("Atualizado na cache e no banco", hash.buscar(cod), cod, mc.getFilaPrioridade());
+        log.log("Atualizado na cache e no banco", hash.buscar(cod), mc.getListaCache());
     }
 
     public void inserirNoCacheComLimite(int cod) throws MyPickException {
-        for (int i = 30; i < 61; i++){
+        for (int i = 30; i < 60; i++){
             buscar(i);
         }
     }
@@ -141,180 +141,77 @@ public class Servidor {
         ServiceOrder order69 = new ServiceOrder("Anderson", "Erro: Erro de sincronização de tempo");
         ServiceOrder order70 = new ServiceOrder("Luiza", "Erro: Falha na autenticação de usuário");
 
-        No n1 = new No(order1, 1);
-        No n2 = new No(order2, 1);
-        No n3 = new No(order3, 1);
-        No n4 = new No(order4, 1);
-        No n5 = new No(order5, 1);
-        No n6 = new No(order6, 1);
-        No n7 = new No(order7, 1);
-        No n8 = new No(order8, 1);
-        No n9 = new No(order9, 1);
-        No n10 = new No(order10, 1);
-        No n11 = new No(order11, 1);
-        No n12 = new No(order12, 1);
-        No n13 = new No(order13, 1);
-        No n14 = new No(order14, 1);
-        No n15 = new No(order15, 1);
-        No n16 = new No(order16, 1);
-        No n17 = new No(order17, 1);
-        No n18 = new No(order18, 1);
-        No n19 = new No(order19, 1);
-        No n20 = new No(order20, 1);
-        No n21 = new No(order21, 1);
-        No n22 = new No(order22, 1);
-        No n23 = new No(order23, 1);
-        No n24 = new No(order24, 1);
-        No n25 = new No(order25, 1);
-        No n26 = new No(order26, 1);
-        No n27 = new No(order27, 1);
-        No n28 = new No(order28, 1);
-        No n29 = new No(order29, 1);
-        No n30 = new No(order30, 1);
-        No n31 = new No(order31, 1);
-        No n32 = new No(order32, 1);
-        No n33 = new No(order33, 1);
-        No n34 = new No(order34, 1);
-        No n35 = new No(order35, 1);
-        No n36 = new No(order36, 1);
-        No n37 = new No(order37, 1);
-        No n38 = new No(order38, 1);
-        No n39 = new No(order39, 1);
-        No n40 = new No(order40, 1);
-        No n41 = new No(order41, 1);
-        No n42 = new No(order42, 1);
-        No n43 = new No(order43, 1);
-        No n44 = new No(order44, 1);
-        No n45 = new No(order45, 1);
-        No n46 = new No(order46, 1);
-        No n47 = new No(order47, 1);
-        No n48 = new No(order48, 1);
-        No n49 = new No(order49, 1);
-        No n50 = new No(order50, 1);
-        No n51 = new No(order51, 1);
-        No n52 = new No(order52, 1);
-        No n53 = new No(order53, 1);
-        No n54 = new No(order54, 1);
-        No n55 = new No(order55, 1);
-        No n56 = new No(order56, 1);
-        No n57 = new No(order57, 1);
-        No n58 = new No(order58, 1);
-        No n59 = new No(order59, 1);
-        No n60 = new No(order60, 1);
-        No n61 = new No(order61, 1);
-        No n62 = new No(order62, 1);
-        No n63 = new No(order63, 1);
-        No n64 = new No(order64, 1);
-        No n65 = new No(order65, 1);
-        No n66 = new No(order66, 1);
-        No n67 = new No(order67, 1);
-        No n68 = new No(order68, 1);
-        No n69 = new No(order69, 1);
-        No n70 = new No(order70, 1);
+        inserirInicial(order1);
+        inserirInicial(order2);
+        inserirInicial(order3);
+        inserirInicial(order4);
+        inserirInicial(order5);
+        inserirInicial(order6);
+        inserirInicial(order7);
+        inserirInicial(order8);
+        inserirInicial(order9);
+        inserirInicial(order10);
+        inserirInicial(order11);
+        inserirInicial(order12);
+        inserirInicial(order13);
+        inserirInicial(order14);
+        inserirInicial(order15);
+        inserirInicial(order16);
+        inserirInicial(order17);
+        inserirInicial(order18);
+        inserirInicial(order19);
+        inserirInicial(order20);
+        inserirInicial(order21);
+        inserirInicial(order22);
+        inserirInicial(order23);
+        inserirInicial(order24);
+        inserirInicial(order25);
+        inserirInicial(order26);
+        inserirInicial(order27);
+        inserirInicial(order28);
+        inserirInicial(order29);
+        inserirInicial(order30);
+        inserirInicial(order31);
+        inserirInicial(order32);
+        inserirInicial(order33);
+        inserirInicial(order34);
+        inserirInicial(order35);
+        inserirInicial(order36);
+        inserirInicial(order37);
+        inserirInicial(order38);
+        inserirInicial(order39);
+        inserirInicial(order40);
+        inserirInicial(order41);
+        inserirInicial(order42);
+        inserirInicial(order43);
+        inserirInicial(order44);
+        inserirInicial(order45);
+        inserirInicial(order46);
+        inserirInicial(order47);
+        inserirInicial(order48);
+        inserirInicial(order49);
+        inserirInicial(order50);
+        inserirInicial(order51);
+        inserirInicial(order52);
+        inserirInicial(order53);
+        inserirInicial(order54);
+        inserirInicial(order55);
+        inserirInicial(order56);
+        inserirInicial(order57);
+        inserirInicial(order58);
+        inserirInicial(order59);
+        inserirInicial(order60);
+        inserirInicial(order61);
+        inserirInicial(order62);
+        inserirInicial(order63);
+        inserirInicial(order64);
+        inserirInicial(order65);
+        inserirInicial(order66);
+        inserirInicial(order67);
+        inserirInicial(order68);
+        inserirInicial(order69);
+        inserirInicial(order70);
 
-
-        List<No> nos = new ArrayList<>();
-
-        nos.add(n1);
-        nos.add(n2);
-        nos.add(n3);
-        nos.add(n4);
-        nos.add(n5);
-        nos.add(n6);
-        nos.add(n7);
-        nos.add(n8);
-        nos.add(n9);
-        nos.add(n10);
-        nos.add(n11);
-        nos.add(n12);
-        nos.add(n13);
-        nos.add(n14);
-        nos.add(n15);
-        nos.add(n16);
-        nos.add(n17);
-        nos.add(n18);
-        nos.add(n19);
-        nos.add(n20);
-        nos.add(n21);
-        nos.add(n22);
-        nos.add(n23);
-        nos.add(n24);
-        nos.add(n25);
-        nos.add(n26);
-        nos.add(n27);
-        nos.add(n28);
-        nos.add(n29);
-        nos.add(n30);
-        nos.add(n31);
-        nos.add(n32);
-        nos.add(n33);
-        nos.add(n34);
-        nos.add(n35);
-        nos.add(n36);
-        nos.add(n37);
-        nos.add(n38);
-        nos.add(n39);
-        nos.add(n40);
-        nos.add(n41);
-        nos.add(n42);
-        nos.add(n43);
-        nos.add(n44);
-        nos.add(n45);
-        nos.add(n46);
-        nos.add(n47);
-        nos.add(n48);
-        nos.add(n49);
-        nos.add(n50);
-        nos.add(n51);
-        nos.add(n52);
-        nos.add(n53);
-        nos.add(n54);
-        nos.add(n55);
-        nos.add(n56);
-        nos.add(n57);
-        nos.add(n58);
-        nos.add(n59);
-        nos.add(n60);
-        nos.add(n61);
-        nos.add(n62);
-        nos.add(n63);
-        nos.add(n64);
-        nos.add(n65);
-        nos.add(n66);
-        nos.add(n67);
-        nos.add(n68);
-        nos.add(n69);
-        nos.add(n70);
-
-        for (No no : nos) {
-            inserir(no);
-        }
-
-        
-        inserirNoCacheComLimite(50);
-        inserirNoCacheComLimite(51);
-        inserirNoCacheComLimite(52);
-        inserirNoCacheComLimite(53);
-        inserirNoCacheComLimite(54);
-        inserirNoCacheComLimite(55);
-        inserirNoCacheComLimite(56);
-        inserirNoCacheComLimite(57);
-        inserirNoCacheComLimite(58);
-        inserirNoCacheComLimite(59);
-        inserirNoCacheComLimite(60);
-        inserirNoCacheComLimite(61);
-        inserirNoCacheComLimite(62);
-        inserirNoCacheComLimite(63);
-        inserirNoCacheComLimite(64);
-        inserirNoCacheComLimite(65);
-        inserirNoCacheComLimite(66);
-        inserirNoCacheComLimite(67);
-        inserirNoCacheComLimite(68);
-        inserirNoCacheComLimite(69);
-        inserirNoCacheComLimite(70);
-
-        
-        
     }
 
     @Override
